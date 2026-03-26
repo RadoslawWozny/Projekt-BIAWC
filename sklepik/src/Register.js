@@ -96,7 +96,7 @@ export default function Register() {
       <section className="register-card" role="region" aria-label="Formularz rejestracji">
         <h1 id="register-heading" className="register-title">Utwórz konto</h1>
 
-        <form className="register-form" onSubmit={handleSubmit} noValidate>
+        <form className="register-form" method="POST" action="/register" noValidate>
           <label className="label" htmlFor="email">Email
             <input
               id="email"

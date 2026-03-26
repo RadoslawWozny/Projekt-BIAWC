@@ -72,7 +72,7 @@ export default function Login() {
       <section className="login-card" role="region" aria-label="Formularz logowania">
         <h1 id="login-heading" className="login-title">Zaloguj się</h1>
 
-        <form className="login-form" onSubmit={handleSubmit} noValidate>
+        <form className="login-form" method="POST" action="/login" noValidate>
           <label htmlFor="identifier" className="label">
             Login lub email
             <input

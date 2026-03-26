@@ -106,9 +106,11 @@ margin-left: 30px;
   box-shadow: 0 8px 20px rgba(107,139,255,0.12);
   outline:none;
 }
-#abcd {
 
+.submenu.open {
+  margin-left: 8vw;
 }
+
 
 /* Chevron */
 .has-children .chev{margin-left:6px;vertical-align:middle;opacity:0.9}
@@ -130,8 +132,11 @@ margin-left: 30px;
   opacity:0;
   transform: translateY(-6px) scale(.98);
   z-index:40;
+  list-style: none;
 }
 .submenu.open{display:block;opacity:1;transform:translateY(0) scale(1)}
+
+
 
 /* Submenu items */
 .submenu__link{
@@ -147,6 +152,12 @@ margin-left: 30px;
   color:var(--accent-2);
   border-radius:8px;
 }
+
+.nav__item { position: relative; }
+.submenu { display: none; position: absolute; top: 100%; left: 0; }
+.nav__item:hover .submenu,
+.nav__item.open .submenu { display: block; }
+
 
 /* Actions: search, icons */
 .nav__actions{display:flex;align-items:center;gap:0.6rem;margin-left:20rem}

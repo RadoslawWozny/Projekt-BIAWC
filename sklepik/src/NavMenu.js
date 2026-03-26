@@ -137,7 +137,7 @@ export default function NavMenu() {
               </button>
             </form>
 
-            <Link to="/konto" className="nav__icon" aria-label="Konto użytkownika">
+            <Link to="/login" className="nav__icon" aria-label="Konto użytkownika">
               <svg width="20" height="20" aria-hidden="true"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5" fill="none"/><path d="M3 18c1.5-4 12-4 14 0" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
             </Link>
 

@@ -211,7 +211,7 @@ export default function Register() {
           </button>
 
           <div className="signup-note">
-            Masz już konto? <Link to="/konto">Zaloguj się</Link>
+            Masz już konto? <Link to="/login">Zaloguj się</Link>
           </div>
         </form>
       </section>

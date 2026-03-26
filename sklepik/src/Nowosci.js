@@ -3,7 +3,10 @@ import "./Nowosci.css";
 export default function Nowosci() {
 
     return (
-    <div className="tekst">
+    <div className="tekst abcd">
+        <h1>
+            Lorem ipsum
+        </h1>
 <p className="tekst">
 Wstęp
 Kawa i herbata towarzyszą nam codziennie — od porannego rytuału po popołudniowy relaks. Oba napoje mają długą historię i wiele odmian, dlatego warto poznać ich podstawy, by świadomie wybierać smak i sposób parzenia. 

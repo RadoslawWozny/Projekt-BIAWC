@@ -1,5 +1,9 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "./Home.css"
+import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+
 
 
 
@@ -21,10 +25,68 @@ const SAMPLE_PRODUCTS = [
   { id: "p3", name: "Lorem Coffee 2", type: "Kawa", price: 49.0, description: "Sed do eiusmod tempor.", image: "https://via.placeholder.com/320x240?text=Kawa+2" },
   { id: "p4", name: "Lorem Tea 2", type: "Herbata", price: 29.0, description: "Incididunt ut labore et dolore.", image: "https://via.placeholder.com/320x240?text=Herbata+2" },
   { id: "p5", name: "Lorem Blend", type: "Kawa", price: 59.0, description: "Magna aliqua lorem ipsum.", image: "https://via.placeholder.com/320x240?text=Blend" },
-  { id: "p5", name: "Lorem Blend", type: "Kawa", price: 59.0, description: "Magna aliqua lorem ipsum.", image: "https://via.placeholder.com/320x240?text=Blend" },
+  { id: "p6", name: "Lorem Blend2", type: "Kawa", price: 59.0, description: "Magna aliqua lorem ipsum.", image: "https://via.placeholder.com/320x240?text=Blend" },
 ];
 
-export default function NewArrivals() {
+
+export default function NewArrivals( {productId: propProductId} ) {
+
+const params = useParams();
+  const productId = propProductId ?? params.productId ?? null;
+
+  // stany
+  const [loading, setLoading] = useState(Boolean(productId));
+  const [error, setError] = useState(null);
+  const [product, setProduct] = useState({ items: [] });
+
+  useEffect(() => {
+    // jeśli brak productId to ustaw pusty stan i zakończ
+    if (!productId) {
+      setProduct({ items: [] });
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    let cancelled = false;
+
+    async function fetchItem() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/products/${encodeURIComponent(productId)}`, {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+          signal: controller.signal
+        });
+        if (!res.ok) throw new Error(`Błąd serwera: ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) {
+          // zapisujemy wynik do stanu, który jest renderowany poza fetch
+          setProduct(data ?? { items: [] });
+        }
+      } catch (err) {
+        if (!cancelled) {
+          if (err.name === "AbortError") {
+            // fetch anulowany, nic nie robimy
+          } else {
+            setError(err.message || "Nieznany błąd");
+          }
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchItem();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [productId]);
+
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("Wszystkie");
   const [sort, setSort] = useState("popularne");
@@ -47,6 +109,85 @@ export default function NewArrivals() {
 
     return list;
   }, [query, filter, sort]);
+
+//   const HomeContext = React.createContext({
+//   homeItem: null,
+//   setHomeItem: () => {}
+// });
+
+
+// function ProductFetcher({ productId, onUpdateHome }) {
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState(null);
+
+//   useEffect(() => {
+//     let cancelled = false;
+//     async function fetchItem() {
+//       setLoading(true);
+//       setError(null);
+//       try {
+//         const res = await fetch(`/home/${encodeURIComponent(productId)}`, {
+//           method: "GET",
+//           headers: { "Accept": "application/json" },
+//         });
+//         if (!res.ok) throw new Error(`Błąd serwera: ${res.status}`);
+//         const data = await res.json();
+//         if (!cancelled) {
+//           // zamiast setCart ustawiamy wynik w onUpdateHome
+//           onUpdateHome?.(data);
+//         }
+//       } catch (err) {
+//         if (!cancelled) setError(err.message || "Nieznany błąd");
+//       } finally {
+//         if (!cancelled) setLoading(false);
+//       }
+//     }
+
+//     if (productId) fetchItem();
+//     return () => { cancelled = true; };
+//   }, [productId, onUpdateHome]);
+
+//   if (loading) return <div>Ładowanie…</div>;
+//   if (error) return <div className="error">Błąd: {error}</div>;
+//   return null;
+// }
+
+// const params = useParams();
+//   const productId = propProductId ?? params.productId ?? null;
+
+
+// async function fetchItem() {
+//   setLoading(true);
+//   setError(null);
+//   try {
+//     const res = await fetch(`/home/${encodeURIComponent(productId)}`, {
+//       method: "GET",
+//       headers: { "Accept": "application/json" },
+//     });
+//     if (!res.ok) throw new Error(`Błąd serwera: ${res.status}`);
+//     const data = await res.json();
+//     if (!cancelled) {
+//       // zamiast setCart ustawiamy wynik w callbacku, kontekście lub dispatchujemy event
+//       if (typeof onUpdateHome === "function") {
+//         onUpdateHome(data);
+//       } else {
+//         // // alternatywnie: dispatch event
+//         // window.dispatchEvent(new CustomEvent("home:update", { detail: data }));
+//       }
+//     }
+//   } catch (err) {
+//     if (!cancelled) setError(err.message || "Nieznany błąd");
+//   } finally {
+//     if (!cancelled) setLoading(false);
+//   }
+// }
+
+
+  
+
+  // renderowanie listy poza funkcją fetch
+ 
+
 
   return (
     <main className="na-root">
@@ -90,8 +231,10 @@ export default function NewArrivals() {
             <p>Nie znaleziono produktów pasujących do kryteriów. Lorem ipsum dolor sit amet.</p>
           </div>
         ) : (
+            <>
           <ul className="na-grid" role="list">
             {filtered.map(product => (
+                <Link to={`/products/${encodeURIComponent(productId)}`}>
               <li key={product.id} className="na-card" role="listitem">
                 <img src={product.image} alt={product.name} className="na-image" />
                 <div className="na-card-body">
@@ -106,8 +249,36 @@ export default function NewArrivals() {
                   </div>
                 </div>
               </li>
+              </Link>
             ))}
+
+            <li>
+<section className="na-grid">
+      <h2>Produkty fetchowane z backendu</h2>
+
+      {loading && <div>Ładowanie…</div>}
+      {error && <div className="error">Błąd: {error}</div>}
+
+      {!loading && !error && (!product.items || product.items.length === 0) && (
+        <div>Brak produktów do wyświetlenia. zrobcie pls backend</div>
+      )}
+
+      {!loading && product.items && product.items.length > 0 && (
+        <ul className="product-list">
+          {product.items.map((it) => (
+            <li key={it.id} className="product-item">
+              <h3>{it.name}</h3>
+              <p>{it.description}</p>
+              <div className="price">{(it.price ?? 0).toFixed(2)} PLN</div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+
+            </li>
           </ul>
+     </>
         )}
       </section>
 

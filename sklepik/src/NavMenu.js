@@ -77,7 +77,7 @@ export default function NavMenu() {
         </button>
 
 
-        <Link to="/" className="nav__brand">MojeSklep</Link>
+        <Link to="/" className="nav__brand"> Strona Główna</Link>
 
 
 <div id ="abcd"></div>

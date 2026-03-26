@@ -22,3 +22,12 @@
         @media (max-width: 900px) { .na-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 560px) { .na-grid { grid-template-columns: 1fr; } .na-image { height:160px; } .na-controls { flex-direction:column; align-items:stretch; } }
         .visually-hidden { position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden; }
+
+
+
+a:-webkit-any-link {
+    color: black;
+    cursor: pointer;
+    text-decoration: none;
+
+}

@@ -51,7 +51,7 @@ margin-left: 30px;
   font-weight:700;
   color:var(--text);
   text-decoration:none;
-  margin-right:1rem;
+  margin-right: 1rem;
   display:inline-flex;
   align-items:center;
   gap:0.5rem;
@@ -59,8 +59,8 @@ margin-left: 30px;
 }
 .nav__brand::before{
   content:"";
-  width:36px;
-  height:36px;
+  width: 3vw;
+  height:2vw;
   border-radius:8px;
   background: conic-gradient(from 120deg, var(--accent), var(--accent-2), var(--accent-3));
   box-shadow: 0 4px 12px rgba(107,107,255,0.12);

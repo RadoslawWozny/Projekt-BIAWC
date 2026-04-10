@@ -194,6 +194,18 @@ export default function Register() {
             />
           </label>
 
+ <label className="label" htmlFor="telefon">Nr kontaktowy
+            <input
+              id="telefon"
+              name="telefon"
+              type="text"
+              value={form.address}
+              onChange={handleChange}
+              className="input"
+              placeholder="+48  000-000-000"
+            />
+          </label>
+
           <label className="checkbox-label">
             <input
               type="checkbox"

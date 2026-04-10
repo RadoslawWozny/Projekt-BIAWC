@@ -140,10 +140,7 @@ export default function Login() {
 
           <div className="divider">albo</div>
 
-          <div className="social-row">
-            <button type="button" className="btn-social">Zaloguj przez Google</button>
-            <button type="button" className="btn-social alt">Zaloguj przez Facebook</button>
-          </div>
+        
 
           <p className="signup">
             Nie masz konta? <Link to="/rejestracja">Zarejestruj się</Link>

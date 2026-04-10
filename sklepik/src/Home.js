@@ -194,10 +194,41 @@ const params = useParams();
     <div className="tlo">
       <div className="content">
     <main className="na-root">
+
       <header className="na-header">
         <h1 className="na-title">Lorem ipsum dolor sit amet</h1>
         <p className="na-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit.</p>
 
+
+
+      <div className="bestsellery">
+
+        <ul className="na-grid" role="list">
+            {filtered.slice(0,3).map(product => (
+                <Link to={`/products/${encodeURIComponent(productId)}`}>
+              <li key={product.id} className="na-card" role="listitem">
+                <img src={product.image} alt={product.name} className="na-image" />
+                <div className="na-card-body">
+                  <div className="na-card-top">
+                    <h3 className="na-product-name">{product.name}</h3>
+                    <div className="na-price">{product.price.toFixed(2)} PLN</div>
+                  </div>
+                  <p className="na-desc">{product.description}</p>
+                  <div className="na-actions">
+                    <button className="btn btn-primary">Lorem ipsum</button>
+                    <button className="btn btn-outline">Dolor sit</button>
+                  </div>
+                </div>
+              </li>
+              </Link>
+            ))}
+            </ul>
+
+
+
+
+        
+      </div>
         <div className="na-controls">
           <label className="na-search">
             <span className="visually-hidden">Szukaj</span>
@@ -226,6 +257,7 @@ const params = useParams();
           </div>
         </div>
       </header>
+
 
       <section className="na-grid-section" aria-live="polite">
         {filtered.length === 0 ? (

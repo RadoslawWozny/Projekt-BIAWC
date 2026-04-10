@@ -9,9 +9,36 @@ import Herbaty from "./Herbaty";
 import Home from "./Home";
 import Login from "./Login";
 import Register from "./Register";
+import CategoryPage from "./CategoryPage";
+import ProductPage from "./ProductPage";
 
 
 function App() {
+
+const categories = [
+  {
+    id: "kawy",
+    label: "Kawy",
+    path: "/kawy",
+    children: [
+      { id: "kawa1", label: "kawa1", path: "/kawy/kawa1" },
+      { id: "kawa2", label: "kawa2", path: "/kawy/kawa2" },
+      { id: "kawa3", label: "kawa3", path: "/kawy/kawa3" }
+    ]
+  },
+  {
+    id: "herbaty",
+    label: "Herbaty",
+    path: "/herbaty",
+    children: [
+      { id: "herbata1", label: "herbata1", path: "/herbaty/herbata1" },
+      { id: "herbata2", label: "herbata2", path: "/herbaty/herbata2" }
+    ]
+  }
+];
+
+
+
 
 
   return (
@@ -21,6 +48,9 @@ function App() {
 
 
 <Routes>
+<Route path="/:category/:productId" element={<ProductPage />} />
+<Route path="/:category/:categoryId" element={<CategoryPage />} />
+
   <Route path ="/" element={<Home/>} />
    <Route path="/koszyk" element={<UserCart />} />
   <Route path="/koszyk/:userId" element={<UserCart />} />

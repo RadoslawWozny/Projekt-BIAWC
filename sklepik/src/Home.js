@@ -190,6 +190,9 @@ const params = useParams();
 
 
   return (
+    <div className="calosc">
+    <div className="tlo">
+      <div className="content">
     <main className="na-root">
       <header className="na-header">
         <h1 className="na-title">Lorem ipsum dolor sit amet</h1>
@@ -283,5 +286,8 @@ const params = useParams();
       </section>
 
     </main>
+    </div>
+    </div>
+    </div>
   );
 }

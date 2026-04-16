@@ -91,24 +91,55 @@ const params = useParams();
   const [filter, setFilter] = useState("Wszystkie");
   const [sort, setSort] = useState("popularne");
 
+
+  
   const filtered = useMemo(() => {
-    let list = SAMPLE_PRODUCTS.slice();
+  let list = SAMPLE_PRODUCTS.slice();
 
-    if (filter !== "Wszystkie") {
-      list = list.filter(p => p.type === filter);
-    }
+  if (filter !== "Wszystkie") {
+    list = list.filter(p => p.type === filter);
+  }
 
-    if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      list = list.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
-    }
+  if (query.trim()) {
+    const q = query.trim().toLowerCase();
+    list = list.filter(
+      p => p.name.toLowerCase().includes(q) ||
+           p.description.toLowerCase().includes(q)
+    );
+  }
 
-    if (sort === "cena-rosn") list.sort((a, b) => a.price - b.price);
-    if (sort === "cena-malej") list.sort((a, b) => b.price - a.price);
-    if (sort === "nazwa") list.sort((a, b) => a.name.localeCompare(b.name));
+  if (sort === "cena-rosn") list.sort((a, b) => a.price - b.price);
+  if (sort === "cena-malej") list.sort((a, b) => b.price - a.price);
+  if (sort === "nazwa") list.sort((a, b) => a.name.localeCompare(b.name));
 
-    return list;
-  }, [query, filter, sort]);
+  return list;
+}, [query, filter, sort]);
+
+const [index, setIndex] = useState(0);
+const visibleCount = 3;
+
+const prev = () => {
+  setIndex(i => (i === 0 ? filtered.length - 1 : i - 1));
+};
+
+const next = () => {
+  setIndex(i => (i === filtered.length - 1 ? 0 : i + 1));
+};
+
+const visibleProducts = useMemo(() => {
+  if (filtered.length === 0) return [];
+
+  const slice = filtered.slice(index, index + visibleCount);
+
+  if (slice.length < visibleCount) {
+    return [
+      ...slice,
+      ...filtered.slice(0, visibleCount - slice.length)
+    ];
+  }
+
+  return slice;
+}, [filtered, index]);
 
 //   const HomeContext = React.createContext({
 //   homeItem: null,
@@ -186,50 +217,12 @@ const params = useParams();
   
 
   // renderowanie listy poza funkcją fetch
- 
 
 
   return (
-    <div className="calosc">
-    <div className="tlo">
-      <div className="content">
-    <main className="na-root">
 
-      <header className="na-header">
-        <h1 className="na-title">Lorem ipsum dolor sit amet</h1>
-        <p className="na-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit.</p>
-
-
-
-      <div className="bestsellery">
-
-        <ul className="na-grid" role="list">
-            {filtered.slice(0,3).map(product => (
-                <Link to={`/products/${encodeURIComponent(productId)}`}>
-              <li key={product.id} className="na-card" role="listitem">
-                <img src={product.image} alt={product.name} className="na-image" />
-                <div className="na-card-body">
-                  <div className="na-card-top">
-                    <h3 className="na-product-name">{product.name}</h3>
-                    <div className="na-price">{product.price.toFixed(2)} PLN</div>
-                  </div>
-                  <p className="na-desc">{product.description}</p>
-                  <div className="na-actions">
-                    <button className="btn btn-primary">Lorem ipsum</button>
-                    <button className="btn btn-outline">Dolor sit</button>
-                  </div>
-                </div>
-              </li>
-              </Link>
-            ))}
-            </ul>
-
-
-
-
-        
-      </div>
-        <div className="na-controls">
+<>
+    <div className="na-controls">
           <label className="na-search">
             <span className="visually-hidden">Szukaj</span>
             <input
@@ -256,6 +249,56 @@ const params = useParams();
             </select>
           </div>
         </div>
+
+    
+    <div className="calosc">
+    <div className="tlo">
+      <div className="content">
+    <main className="na-root">
+
+      <header className="na-header">
+        <h1 className="na-title">Lorem ipsum dolor sit amet</h1>
+        <p className="na-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit.</p>
+
+
+
+      <div className="bestsellery">
+
+        <div style={{ display: "flex", alignItems: "center", gap: "20px", justifyContent: "center", alignItems: "center" }}>
+  
+  <button onClick={prev} style={{ fontSize: "24px" }}>◀</button>
+
+  <div className="na-card-body2">
+       <div className="na-card-top"></div>
+    {visibleProducts.map(p => (
+      <div key={p.id} className="na-card" style={{ width: "200px", textAlign: "center" }}>
+        <div className="na-card-body">
+          <div className="na-image">
+        <img src={p.image} style={{ width: "100%", borderRadius: "8px" }} />
+        </div>
+        <h4 className="na-product-name">{p.name}</h4>
+        <p className="na-price">{p.price} zł</p>
+            <button className="btn btn-primary">Lorem ipsum</button>
+                    <button className="btn btn-outline">Dolor sit</button>
+                    </div>
+      </div>
+    ))}
+  
+  </div>
+
+  <button onClick={next} style={{ fontSize: "24px" }}>▶</button>
+
+</div>
+
+
+
+
+
+        
+      </div>
+
+
+        
       </header>
 
 
@@ -321,5 +364,6 @@ const params = useParams();
     </div>
     </div>
     </div>
+    </>
   );
 }

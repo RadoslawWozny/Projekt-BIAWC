@@ -5,6 +5,17 @@ from app.models.product import Product
 from app.models.product_schema import ProductCreate, ProductUpdate
 
 
+def search_products_by_description(db: Session, query: str, limit: int = 5):
+    """Wyszukuje produkty po frazie w opisie (case-insensitive), zwraca losowe `limit` wyników"""
+    return (
+        db.query(Product)
+        .filter(Product.opis.ilike(f"%{query}%"))
+        .order_by(func.random())
+        .limit(limit)
+        .all()
+    )
+
+
 def get_all_products(db: Session):
     """Pobiera wszystkie produkty z bazy"""
     return db.query(Product).all()

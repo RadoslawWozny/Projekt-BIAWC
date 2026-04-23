@@ -1,0 +1,52 @@
+.nowosci-container {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  line-height: 1.7;
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+
+.nowosci-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.nowosci-text {
+  font-size: 1.1rem;
+  margin-bottom: 22px;
+  color: #444;
+}
+
+.nowosci-text strong {
+  font-size: 1.2rem;
+  color: #1a73e8;
+}
+
+.nowosci-text em {
+  font-style: normal;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+  .nowosci-container {
+    padding: 25px;
+    margin: 20px;
+  }
+
+  .nowosci-title {
+    font-size: 2rem;
+  }
+
+  .nowosci-text {
+    font-size: 1rem;
+  }
+}

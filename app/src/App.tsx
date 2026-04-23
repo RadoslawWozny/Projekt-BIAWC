@@ -43,40 +43,65 @@ interface TweakState {
    ═══════════════════════════════════════════════════════════ */
 const MEGA: Record<string, { label: string; sub: string; id: string }[]> = {
   'Kawy': [
-    { label: 'Kawa Ziarnista', sub: 'Single origin & blends', id: 'ziarnista' },
-    { label: 'Kawa Mielona', sub: 'Do ekspresu przelewowego', id: 'mielona' },
-    { label: 'Kawa Espresso', sub: 'Intensywne blends', id: 'espresso' },
-    { label: 'Kawa Bezkofeinowa', sub: 'Pełny smak, bez kofeiny', id: 'bezkofeinowa' },
-    { label: 'Specialty Coffee', sub: 'Ocena SCA 80+', id: 'specialty' },
-    { label: 'Kawa Smakowa', sub: 'Wanilia, orzech, karmel', id: 'smakowa' },
+    { label: 'Kawa Ziarnista', sub: 'Single origin & blends', id: 'kawa-ziarnista' },
+    { label: 'Kawa Mielona', sub: 'Do ekspresu przelewowego', id: 'kawa-mielona' },
+    { label: 'Kawa Espresso', sub: 'Intensywne blends', id: 'kawa-espresso' },
+    { label: 'Cold Brew', sub: 'Na zimno, smooth', id: 'kawa-coldbrew' },
+    { label: 'Specialty Coffee', sub: 'Ocena SCA 80+', id: 'kawa-specialty' },
+    { label: 'Rozpuszczalna', sub: 'Szybka i wygodna', id: 'kawa-rozpuszczalna' },
   ],
   'Herbaty': [
-    { label: 'Herbata Zielona', sub: 'Japońska & chińska', id: 'zielona' },
-    { label: 'Herbata Czarna', sub: 'Assam, Darjeeling, Ceylon', id: 'czarna' },
-    { label: 'Herbata Biała', sub: 'Delikatna, kwiatowa', id: 'biala' },
-    { label: 'Matcha', sub: 'Ceremonial & kulinarny', id: 'matcha' },
-    { label: 'Ziołowe Napary', sub: 'Rumianek, mięta, imbir', id: 'ziola' },
-    { label: 'Yerba Mate', sub: 'Argentyńska tradycja', id: 'yerba' },
+    { label: 'Herbata Zielona', sub: 'Japońska & chińska', id: 'herbata-zielona' },
+    { label: 'Herbata Czarna', sub: 'Assam, Darjeeling, Ceylon', id: 'herbata-czarna' },
+    { label: 'Herbata Biała', sub: 'Delikatna, kwiatowa', id: 'herbata-biala' },
+    { label: 'Oolong', sub: 'Częściowo utleniona', id: 'herbata-oolong' },
+    { label: 'Ziołowe Napary', sub: 'Rumianek, mięta, imbir', id: 'herbata-ziolowa' },
+    { label: 'Pu-erh', sub: 'Fermentowana, ziemista', id: 'herbata-puerh' },
   ],
   'Dodatki i Syropy': [
-    { label: 'Syropy Smakowe', sub: 'Lawenda, wanilia, malina', id: 'syropy' },
-    { label: 'Cukier Trzcinowy', sub: 'Naturalny i kokosowy', id: 'cukier' },
-    { label: 'Mleko Roślinne', sub: 'Owsiane, migdałowe, sojowe', id: 'mleko' },
-    { label: 'Akcesoria', sub: 'Drippery, french press, tamper', id: 'akcesoria' },
-    { label: 'Zestawy Prezentowe', sub: 'Eleganckie upominki', id: 'zestawy' },
+    { label: 'Syropy Smakowe', sub: 'Lawenda, wanilia, malina', id: 'dodatki-syropy' },
+    { label: 'Mleko Roślinne', sub: 'Owsiane, migdałowe, sojowe', id: 'dodatki-mleka' },
+    { label: 'Słodziki', sub: 'Miód, cukier trzcinowy', id: 'dodatki-slodziki' },
+    { label: 'Przyprawy', sub: 'Cynamon, kardamon, imbir', id: 'dodatki-przyprawy' },
   ],
 };
 
 const CATS = [
   { id: 'all', label: 'Wszystkie' },
-  { id: 'ziarnista', label: 'Kawa Ziarnista' },
-  { id: 'espresso', label: 'Kawa Espresso' },
-  { id: 'zielona', label: 'Herbata Zielona' },
-  { id: 'czarna', label: 'Herbata Czarna' },
-  { id: 'matcha', label: 'Matcha' },
-  { id: 'syropy', label: 'Syropy' },
+  { id: 'kawa', label: 'Kawa' },
+  { id: 'kawa-ziarnista', label: 'Kawa Ziarnista' },
+  { id: 'kawa-espresso', label: 'Espresso' },
+  { id: 'herbata', label: 'Herbata' },
+  { id: 'herbata-zielona', label: 'Herbata Zielona' },
+  { id: 'herbata-czarna', label: 'Herbata Czarna' },
+  { id: 'dodatki', label: 'Dodatki' },
   { id: 'bestseller', label: 'Bestsellery' },
 ];
+
+/* Maps frontend pill IDs to backend query params */
+const BACKEND_FILTER: Record<string, { kategoria?: string; podkategoria?: string }> = {
+  'all': {},
+  'kawa': { kategoria: 'Kawa' },
+  'kawa-ziarnista': { kategoria: 'Kawa', podkategoria: 'Ziarnista' },
+  'kawa-mielona': { kategoria: 'Kawa', podkategoria: 'Mielona' },
+  'kawa-espresso': { kategoria: 'Kawa', podkategoria: 'Espresso' },
+  'kawa-coldbrew': { kategoria: 'Kawa', podkategoria: 'Cold Brew' },
+  'kawa-specialty': { kategoria: 'Kawa', podkategoria: 'Specialty' },
+  'kawa-rozpuszczalna': { kategoria: 'Kawa', podkategoria: 'Rozpuszczalna' },
+  'herbata': { kategoria: 'Herbata' },
+  'herbata-zielona': { kategoria: 'Herbata', podkategoria: 'Zielona' },
+  'herbata-czarna': { kategoria: 'Herbata', podkategoria: 'Czarna' },
+  'herbata-biala': { kategoria: 'Herbata', podkategoria: 'Biała' },
+  'herbata-oolong': { kategoria: 'Herbata', podkategoria: 'Oolong' },
+  'herbata-ziolowa': { kategoria: 'Herbata', podkategoria: 'Ziołowa' },
+  'herbata-puerh': { kategoria: 'Herbata', podkategoria: 'Pu-erh' },
+  'dodatki': { kategoria: 'Dodatki' },
+  'dodatki-syropy': { kategoria: 'Dodatki', podkategoria: 'Syropy' },
+  'dodatki-mleka': { kategoria: 'Dodatki', podkategoria: 'Mleka roślinne' },
+  'dodatki-slodziki': { kategoria: 'Dodatki', podkategoria: 'Słodziki' },
+  'dodatki-przyprawy': { kategoria: 'Dodatki', podkategoria: 'Przyprawy' },
+  'bestseller': {},
+};
 
 const PRODUCTS: Product[] = [
   { id: 1, category: 'ziarnista', name: 'Ethiopia Yirgacheffe', subtitle: 'Kawa ziarnista single origin', tags: ['100% Arabica', 'Single Origin', 'Owocowy'], price: 89, weight: '250g', rating: 4.8, reviews: 124, color: '#8B6642', desc: 'Delikatna, kwiatowa z nutami czarnej porzeczki i bergamotki.', image: '/images/prod1.jpg' },
@@ -1011,53 +1036,68 @@ function Home() {
   const [cartBump, setCartBump] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [dbProducts, setDbProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
   const productsRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const API = (import.meta.env.VITE_PRODUCTS_API as string) || 'http://localhost:8002/api/v1';
 
-  useEffect(() => {
-    const API = (import.meta.env.VITE_PRODUCTS_API as string) || 'http://localhost:8002/api/v1';
-    fetch(`${API}/products`)
+  const mapRows = useCallback((rows: any[]): Product[] => {
+    const fallbackImgs = ['/images/prod1.jpg','/images/prod2.jpg','/images/prod3.jpg','/images/prod4.jpg','/images/prod5.jpg','/images/prod6.jpg','/images/prod7.jpg','/images/prod8.jpg'];
+    const colorMap: Record<string, string> = { 'Kawa': '#6B4C3B', 'Herbata': '#6B8C6B', 'Dodatki': '#8E7AB5' };
+    return rows.map((r, i) => ({
+      id: 1000 + (r.id ?? i),
+      category: (r.podkategoria || r.kategoria || '').toLowerCase(),
+      name: r.nazwa,
+      subtitle: r.podkategoria || r.kategoria || 'Z bazy danych',
+      tags: [r.kraj_pochodzenia, r.kategoria, r.podkategoria].filter(Boolean),
+      price: Number(r.cena) || 0,
+      weight: r.waga_g ? `${r.waga_g}${r.jednostka === 'ml' ? 'ml' : 'g'}` : (r.jednostka || ''),
+      rating: Number(r.ocena) || 0,
+      reviews: 0,
+      color: colorMap[r.kategoria] || '#6B4C3B',
+      desc: r.opis || '',
+      image: fallbackImgs[i % fallbackImgs.length],
+    }));
+  }, []);
+
+  const fetchProducts = useCallback((catId: string) => {
+    setLoading(true);
+    const filter = BACKEND_FILTER[catId] || {};
+    const params = new URLSearchParams();
+    if (filter.kategoria) params.set('kategoria', filter.kategoria);
+    if (filter.podkategoria) params.set('podkategoria', filter.podkategoria);
+    const qs = params.toString();
+    const url = `${API}/products${qs ? `?${qs}` : ''}`;
+
+    fetch(url)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then((rows: any[]) => {
-        const fallbackImgs = ['/images/prod1.jpg','/images/prod2.jpg','/images/prod3.jpg','/images/prod4.jpg','/images/prod5.jpg','/images/prod6.jpg','/images/prod7.jpg','/images/prod8.jpg'];
-        const catMap: Record<string,string> = { 'Herbata':'zielona', 'Kawa':'ziarnista', 'Syrop':'syropy', 'Matcha':'matcha' };
-        const mapSub = (r: any): string => {
-          const sub = (r.podkategoria || '').toLowerCase();
-          if (sub.includes('ziarnist')) return 'ziarnista';
-          if (sub.includes('espresso')) return 'espresso';
-          if (sub.includes('zielon')) return 'zielona';
-          if (sub.includes('czarn')) return 'czarna';
-          if (sub.includes('matcha')) return 'matcha';
-          if (sub.includes('syrop')) return 'syropy';
-          return catMap[r.kategoria] || 'specialty';
-        };
-        const mapped: Product[] = rows.map((r, i) => ({
-          id: 1000 + (r.id ?? i),
-          category: mapSub(r),
-          name: r.nazwa,
-          subtitle: r.podkategoria || r.kategoria || 'Z bazy danych',
-          tags: [r.kraj_pochodzenia, r.kategoria, r.podkategoria].filter(Boolean),
-          price: Number(r.cena) || 0,
-          weight: r.waga_g ? `${r.waga_g}${r.jednostka === 'ml' ? 'ml' : 'g'}` : (r.jednostka || ''),
-          rating: Number(r.ocena) || 0,
-          reviews: 0,
-          color: '#6B4C3B',
-          desc: r.opis || '',
-          image: fallbackImgs[i % fallbackImgs.length],
-        }));
+        let mapped = mapRows(rows);
+        // 'bestseller' = kliencki filtr po ocenie
+        if (catId === 'bestseller') mapped = mapped.filter(p => p.rating >= 4.7);
         setDbProducts(mapped);
       })
-      .catch(err => console.warn('Nie udało się pobrać produktów z backendu:', err));
-  }, []);
+      .catch(err => console.warn('Nie udało się pobrać produktów z backendu:', err))
+      .finally(() => setLoading(false));
+  }, [API, mapRows]);
+
+  // Initial load + re-fetch when category changes
+  useEffect(() => {
+    fetchProducts(category);
+  }, [category, fetchProducts]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const cat = params.get('cat');
     if (cat) {
-      setCategory(cat);
+      // Map old-style URL params (e.g. ?cat=ziarnista) to new pill IDs
+      const oldToNew: Record<string, string> = {
+        'ziarnista': 'kawa-ziarnista', 'espresso': 'kawa-espresso',
+        'zielona': 'herbata-zielona', 'czarna': 'herbata-czarna',
+        'syropy': 'dodatki', 'matcha': 'herbata',
+      };
+      setCategory(oldToNew[cat] || cat);
       setTimeout(() => productsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-    } else {
-      setCategory('all');
     }
   }, [location.search]);
 
@@ -1083,12 +1123,10 @@ function Home() {
   const cartCount = cart.reduce((s, p) => s + p.qty, 0);
   const accent = tweaks.accentColor;
 
-  const ALL_PRODUCTS = [...PRODUCTS, ...dbProducts];
-  const filtered = ALL_PRODUCTS.filter(p => {
-    const mc = category === 'all' || (category === 'bestseller' ? p.rating >= 4.8 : p.category === category);
+  // Search is still client-side on the fetched set
+  const filtered = dbProducts.filter(p => {
     const q = searchQuery.toLowerCase();
-    const ms = !q || p.name.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q)) || p.subtitle.toLowerCase().includes(q);
-    return mc && ms;
+    return !q || p.name.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q)) || p.subtitle.toLowerCase().includes(q);
   });
 
   const cols = parseInt(tweaks.gridCols) || 3;

@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 from app.models.health import HealthResponse, PingResponse
@@ -41,12 +41,66 @@ async def health_check():
     )
 
 
+# ==================== CATEGORIES ====================
+
+@public_router.get("/categories", response_model=List[str], tags=["categories"])
+def get_categories(db: Session = Depends(get_db)):
+    """Zwraca listę unikalnych kategorii produktów"""
+    return product_service.get_all_categories(db)
+
+
+@public_router.get("/categories/{kategoria}/subcategories", response_model=List[str], tags=["categories"])
+def get_subcategories(kategoria: str, db: Session = Depends(get_db)):
+    """Zwraca listę podkategorii dla danej kategorii"""
+    return product_service.get_all_subcategories(db, kategoria=kategoria)
+
+
 # ==================== CRUD PRODUCTS ====================
 
 @public_router.get("/products", response_model=List[ProductResponse], tags=["products"])
-def get_all_products(db: Session = Depends(get_db)):
-    """Zwraca wszystkie produkty z bazy danych"""
-    return product_service.get_all_products(db)
+def get_all_products(
+    kategoria: Optional[str] = Query(None, description="Filtruj po kategorii (np. Kawa, Herbata, Dodatki)"),
+    podkategoria: Optional[str] = Query(None, description="Filtruj po podkategorii (np. Ziarnista, Espresso, Zielona)"),
+    min_cena: Optional[float] = Query(None, description="Minimalna cena"),
+    max_cena: Optional[float] = Query(None, description="Maksymalna cena"),
+    dostepnosc: Optional[bool] = Query(None, description="Filtruj po dostępności"),
+    kraj_pochodzenia: Optional[str] = Query(None, description="Filtruj po kraju pochodzenia"),
+    sort_by: Optional[str] = Query(None, description="Pole sortowania (cena, ocena, nazwa, data_dodania)"),
+    sort_order: str = Query("asc", description="Kolejność sortowania: asc lub desc"),
+    db: Session = Depends(get_db),
+):
+    """Zwraca produkty z opcjonalnymi filtrami i sortowaniem.
+    
+    Bez parametrów zwraca wszystkie produkty.
+    Przykłady:
+      - /products?kategoria=Kawa
+      - /products?kategoria=Herbata&podkategoria=Zielona
+      - /products?min_cena=50&max_cena=100&sort_by=cena&sort_order=asc
+    """
+    # Jeśli nie ma żadnych filtrów - zwróć wszystko (kompatybilność wsteczna)
+    has_filters = any([kategoria, podkategoria, min_cena is not None, max_cena is not None,
+                       dostepnosc is not None, kraj_pochodzenia, sort_by])
+    if not has_filters:
+        return product_service.get_all_products(db)
+
+    return product_service.get_products_filtered(
+        db,
+        kategoria=kategoria,
+        podkategoria=podkategoria,
+        min_cena=min_cena,
+        max_cena=max_cena,
+        dostepnosc=dostepnosc,
+        kraj_pochodzenia=kraj_pochodzenia,
+        sort_by=sort_by,
+        sort_order=sort_order,
+    )
+
+
+@public_router.get("/products/category/{kategoria}", response_model=List[ProductResponse], tags=["products"])
+def get_products_by_category(kategoria: str, db: Session = Depends(get_db)):
+    """Zwraca produkty o danej kategorii (np. Kawa, Herbata, Dodatki)"""
+    products = product_service.get_products_by_category(db, kategoria)
+    return products
 
 
 @public_router.get("/products/{product_id}", response_model=ProductResponse, tags=["products"])

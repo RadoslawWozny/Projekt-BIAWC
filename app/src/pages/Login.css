@@ -1,0 +1,90 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.login-page { font-family: 'DM Sans', sans-serif; background: #0D0905; min-height: 100vh; overflow-x: hidden; }
+.login-page ::-webkit-scrollbar { width: 5px; }
+.login-page ::-webkit-scrollbar-track { background: #1C1209; }
+.login-page ::-webkit-scrollbar-thumb { background: #5C8A9E; border-radius: 3px; }
+.login-page input:focus { outline: none; }
+.login-page input::placeholder { color: #5A4A3A; }
+.login-page .field-wrap input { transition: border-color .2s, box-shadow .2s; }
+.login-page .field-wrap input:focus { border-color: #5C8A9E !important; box-shadow: 0 0 0 3px rgba(92,138,158,.14); }
+.login-page .btn-main { transition: all .22s ease; }
+.login-page .btn-main:hover { opacity: .88; transform: translateY(-1px); }
+
+/* ── clink scenes (coffee + iced) ─────── */
+@keyframes obj-left {
+  0%  {opacity:0;transform:translateX(-110px)}
+  8%  {opacity:1;transform:translateX(-110px)}
+  28% {transform:translateX(-22px)}
+  36% {transform:translateX(8px)}
+  44% {transform:translateX(-28px)}
+  52% {transform:translateX(-18px)}
+  84% {opacity:1;transform:translateX(-18px)}
+  100%{opacity:0;transform:translateX(-18px)}
+}
+@keyframes obj-right {
+  0%  {opacity:0;transform:translateX(110px)}
+  8%  {opacity:1;transform:translateX(110px)}
+  28% {transform:translateX(22px)}
+  36% {transform:translateX(-8px)}
+  44% {transform:translateX(28px)}
+  52% {transform:translateX(18px)}
+  84% {opacity:1;transform:translateX(18px)}
+  100%{opacity:0;transform:translateX(18px)}
+}
+@keyframes impact-pop {
+  0%,33%{opacity:0;transform:scale(0)}
+  37%{opacity:1;transform:scale(1.4)}
+  45%{opacity:0;transform:scale(.7)}
+  100%{opacity:0}
+}
+
+/* ── pour scene ───────────────────────── */
+@keyframes teapot-tilt {
+  0%,8%  {opacity:0;transform:rotate(0deg)}
+  14%    {opacity:1;transform:rotate(0deg)}
+  30%    {transform:rotate(-44deg)}
+  75%    {transform:rotate(-44deg)}
+  84%    {opacity:1;transform:rotate(-22deg)}
+  100%   {opacity:0;transform:rotate(-10deg)}
+}
+@keyframes pour-stream-show {
+  0%,27%{opacity:0}33%{opacity:1}73%{opacity:1}82%{opacity:0}100%{opacity:0}
+}
+@keyframes tea-fill-rise {
+  0%,27%  {transform:scaleY(0)}
+  73%     {transform:scaleY(1)}
+  100%    {transform:scaleY(1)}
+}
+@keyframes pour-scene-fade {
+  0%,8%{opacity:0}14%{opacity:1}84%{opacity:1}100%{opacity:0}
+}
+@keyframes glass-steam-a {
+  0%,68%{opacity:0;transform:translate(0,0)}75%{opacity:.65}93%{opacity:0;transform:translate(-4px,-22px)}100%{opacity:0}
+}
+@keyframes glass-steam-b {
+  0%,72%{opacity:0;transform:translate(0,0)}78%{opacity:.5}95%{opacity:0;transform:translate(3px,-18px)}100%{opacity:0}
+}
+@keyframes glass-steam-c {
+  0%,70%{opacity:0;transform:translate(0,0)}76%{opacity:.58}94%{opacity:0;transform:translate(-2px,-24px)}100%{opacity:0}
+}
+
+/* ── steam (coffee) ───────────────────── */
+@keyframes steam-a {0%{transform:translate(0,0);opacity:.7}100%{transform:translate(-4px,-22px);opacity:0}}
+@keyframes steam-b {0%{transform:translate(0,0);opacity:.6}100%{transform:translate(2px,-24px);opacity:0}}
+@keyframes steam-c {0%{transform:translate(0,0);opacity:.65}100%{transform:translate(-2px,-20px);opacity:0}}
+
+/* ── ice shake ────────────────────────── */
+@keyframes ice-shake-a {0%,34%{transform:translate(0,0) rotate(0deg)}37%{transform:translate(-6px,-3px) rotate(-14deg)}42%{transform:translate(3px,2px) rotate(7deg)}48%{transform:translate(-2px,0) rotate(-3deg)}53%{transform:translate(0,0) rotate(0deg)}100%{transform:translate(0,0) rotate(0deg)}}
+@keyframes ice-shake-b {0%,34%{transform:translate(0,0) rotate(10deg)}38%{transform:translate(5px,-4px) rotate(22deg)}43%{transform:translate(-3px,2px) rotate(5deg)}49%{transform:translate(1px,0) rotate(10deg)}100%{transform:translate(0,0) rotate(10deg)}}
+@keyframes ice-shake-c {0%,34%{transform:translate(0,0) rotate(-6deg)}39%{transform:translate(-4px,3px) rotate(-20deg)}44%{transform:translate(3px,-2px) rotate(1deg)}50%{transform:translate(0,0) rotate(-6deg)}100%{transform:translate(0,0) rotate(-6deg)}}
+
+/* ── scene label ──────────────────────── */
+@keyframes label-show {0%,7%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+
+/* ── form ─────────────────────────────── */
+@keyframes fadeUp {from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideL {from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideR2 {from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
+.login-page .fade-up {animation:fadeUp .5s ease forwards}
+.login-page .slide-l {animation:slideL .38s cubic-bezier(.22,1,.36,1) forwards}
+.login-page .slide-r2 {animation:slideR2 .38s cubic-bezier(.22,1,.36,1) forwards}

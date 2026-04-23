@@ -275,6 +275,79 @@ const MegaMenu = ({ open, section, accent, onCatClick }: { open: boolean; sectio
 /* ═══════════════════════════════════════════════════════════
    NAVBAR
    ═══════════════════════════════════════════════════════════ */
+const useAuth = () => {
+  const [email, setEmail] = useState<string | null>(() => localStorage.getItem('user_email'));
+  useEffect(() => {
+    const sync = () => setEmail(localStorage.getItem('user_email'));
+    window.addEventListener('auth-change', sync);
+    window.addEventListener('storage', sync);
+    return () => { window.removeEventListener('auth-change', sync); window.removeEventListener('storage', sync); };
+  }, []);
+  const logout = () => {
+    ['access_token', 'id_token', 'refresh_token', 'user_email'].forEach(k => localStorage.removeItem(k));
+    window.dispatchEvent(new Event('auth-change'));
+  };
+  return { email, isAuthed: !!email, logout };
+};
+
+const AuthControl = ({ accent, onCartClick }: { accent: string; onCartClick: () => void }) => {
+  const { email, isAuthed, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+  if (!isAuthed) return (
+    <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 20px', borderRadius: 24, background: '#1C1209', color: '#FAF7F2', border: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: '.03em', transition: 'background .2s ease', cursor: 'pointer', textDecoration: 'none' }}
+      onMouseEnter={e => e.currentTarget.style.background = accent}
+      onMouseLeave={e => e.currentTarget.style.background = '#1C1209'}>
+      <IUser size={15} stroke="#FAF7F2" />Zaloguj się
+    </Link>
+  );
+  const initial = (email || '?').charAt(0).toUpperCase();
+  const items: { label: string; onClick?: () => void; icon: any }[] = [
+    { label: 'Moje konto', icon: <IUser size={15} stroke="#5C3D1E" /> },
+    { label: 'Ustawienia', icon: <Ic d="M12 15a3 3 0 100-6 3 3 0 000 6z M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" size={15} stroke="#5C3D1E" /> },
+    { label: 'Koszyk', icon: <ICart size={15} stroke="#5C3D1E" />, onClick: () => { setOpen(false); onCartClick(); } },
+  ];
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px 6px 6px', borderRadius: 24, background: '#1C1209', color: '#FAF7F2', border: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: 13, cursor: 'pointer', transition: 'background .2s ease' }}
+        onMouseEnter={e => e.currentTarget.style.background = accent}
+        onMouseLeave={e => e.currentTarget.style.background = '#1C1209'}>
+        <span style={{ width: 28, height: 28, borderRadius: '50%', background: accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Cormorant Garamond',serif", fontSize: 15, fontWeight: 500 }}>{initial}</span>
+        <span style={{ maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</span>
+        <IChevDown size={12} stroke="#FAF7F2" />
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: 0, minWidth: 240, background: '#FAF7F2', border: '1px solid #E8DDD0', borderRadius: 14, boxShadow: '0 12px 32px rgba(28,18,9,.12)', padding: 8, zIndex: 200 }}>
+          <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid #F2EBE0', marginBottom: 6 }}>
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, color: '#9E7A5A', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 3 }}>Zalogowano jako</p>
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#1C1209', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{email}</p>
+          </div>
+          {items.map(it => (
+            <button key={it.label} onClick={it.onClick || (() => setOpen(false))} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#1C1209', borderRadius: 8, textAlign: 'left', transition: 'background .15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#F2EBE0'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              {it.icon}{it.label}
+            </button>
+          ))}
+          <div style={{ borderTop: '1px solid #F2EBE0', marginTop: 6, paddingTop: 6 }}>
+            <button onClick={() => { logout(); setOpen(false); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#A04040', borderRadius: 8, textAlign: 'left', transition: 'background .15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#FCEBEB'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <Ic d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" size={15} stroke="#A04040" />
+              Wyloguj się
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Navbar = ({ cartCount, onCartClick, searchQuery, setSearchQuery, accent, onCatFilter, cartBump }: {
   cartCount: number; onCartClick: () => void; searchQuery: string; setSearchQuery: (s: string) => void;
   accent: string; onCatFilter: (id: string) => void; cartBump: boolean;
@@ -338,11 +411,7 @@ const Navbar = ({ cartCount, onCartClick, searchQuery, setSearchQuery, accent, o
               )}
             </button>
 
-            <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 20px', borderRadius: 24, background: '#1C1209', color: '#FAF7F2', border: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: '.03em', transition: 'background .2s ease', cursor: 'pointer', textDecoration: 'none' }}
-              onMouseEnter={e => e.currentTarget.style.background = accent}
-              onMouseLeave={e => e.currentTarget.style.background = '#1C1209'}>
-              <IUser size={15} stroke="#FAF7F2" />Zaloguj się
-            </Link>
+            <AuthControl accent={accent} onCartClick={onCartClick} />
           </div>
         </div>
         </div>
@@ -941,8 +1010,45 @@ function Home() {
   const [cartOpen, setCartOpen] = useState(false);
   const [cartBump, setCartBump] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [dbProducts, setDbProducts] = useState<Product[]>([]);
   const productsRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    const API = (import.meta.env.VITE_PRODUCTS_API as string) || 'http://localhost:8002/api/v1';
+    fetch(`${API}/products`)
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then((rows: any[]) => {
+        const fallbackImgs = ['/images/prod1.jpg','/images/prod2.jpg','/images/prod3.jpg','/images/prod4.jpg','/images/prod5.jpg','/images/prod6.jpg','/images/prod7.jpg','/images/prod8.jpg'];
+        const catMap: Record<string,string> = { 'Herbata':'zielona', 'Kawa':'ziarnista', 'Syrop':'syropy', 'Matcha':'matcha' };
+        const mapSub = (r: any): string => {
+          const sub = (r.podkategoria || '').toLowerCase();
+          if (sub.includes('ziarnist')) return 'ziarnista';
+          if (sub.includes('espresso')) return 'espresso';
+          if (sub.includes('zielon')) return 'zielona';
+          if (sub.includes('czarn')) return 'czarna';
+          if (sub.includes('matcha')) return 'matcha';
+          if (sub.includes('syrop')) return 'syropy';
+          return catMap[r.kategoria] || 'specialty';
+        };
+        const mapped: Product[] = rows.map((r, i) => ({
+          id: 1000 + (r.id ?? i),
+          category: mapSub(r),
+          name: r.nazwa,
+          subtitle: r.podkategoria || r.kategoria || 'Z bazy danych',
+          tags: [r.kraj_pochodzenia, r.kategoria, r.podkategoria].filter(Boolean),
+          price: Number(r.cena) || 0,
+          weight: r.waga_g ? `${r.waga_g}${r.jednostka === 'ml' ? 'ml' : 'g'}` : (r.jednostka || ''),
+          rating: Number(r.ocena) || 0,
+          reviews: 0,
+          color: '#6B4C3B',
+          desc: r.opis || '',
+          image: fallbackImgs[i % fallbackImgs.length],
+        }));
+        setDbProducts(mapped);
+      })
+      .catch(err => console.warn('Nie udało się pobrać produktów z backendu:', err));
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -977,7 +1083,8 @@ function Home() {
   const cartCount = cart.reduce((s, p) => s + p.qty, 0);
   const accent = tweaks.accentColor;
 
-  const filtered = PRODUCTS.filter(p => {
+  const ALL_PRODUCTS = [...PRODUCTS, ...dbProducts];
+  const filtered = ALL_PRODUCTS.filter(p => {
     const mc = category === 'all' || (category === 'bestseller' ? p.rating >= 4.8 : p.category === category);
     const q = searchQuery.toLowerCase();
     const ms = !q || p.name.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q)) || p.subtitle.toLowerCase().includes(q);

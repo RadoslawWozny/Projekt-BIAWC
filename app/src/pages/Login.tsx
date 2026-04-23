@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import './Login.css';
+
+const USER_API = (import.meta.env.VITE_USER_API as string) || 'http://localhost:8001/api/v1';
 
 const ACCENT = '#5C8A9E';
 const SCENE_MS = 5400;
@@ -414,7 +416,8 @@ const LoginForm = ({ onSwitch }: any) => {
   const [err, setErr] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState(false);
-  const submit = (e: any) => {
+  const navigate = useNavigate();
+  const submit = async (e: any) => {
     e.preventDefault();
     const er: any = {};
     if (!email.includes('@')) er.email = 'Niepoprawny email';
@@ -422,7 +425,30 @@ const LoginForm = ({ onSwitch }: any) => {
     setErr(er);
     if (Object.keys(er).length) return;
     setLoading(true);
-    setTimeout(() => { setLoading(false); setOk(true); }, 1400);
+    try {
+      const res = await fetch(`${USER_API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErr({ pass: data.detail || 'Błąd logowania' });
+        setLoading(false);
+        return;
+      }
+      localStorage.setItem('access_token', data.access_token || '');
+      localStorage.setItem('id_token', data.id_token || '');
+      localStorage.setItem('refresh_token', data.refresh_token || '');
+      localStorage.setItem('user_email', email);
+      window.dispatchEvent(new Event('auth-change'));
+      setLoading(false);
+      setOk(true);
+      setTimeout(() => navigate('/'), 900);
+    } catch (ex: any) {
+      setErr({ pass: 'Błąd połączenia z serwerem' });
+      setLoading(false);
+    }
   };
   if (ok) return (
     <div style={{ textAlign: 'center', padding: '36px 0' }}>

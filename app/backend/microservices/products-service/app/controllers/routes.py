@@ -43,13 +43,13 @@ async def health_check():
 
 # ==================== CRUD PRODUCTS ====================
 
-@protected_router.get("/products", response_model=List[ProductResponse], tags=["products"])
+@public_router.get("/products", response_model=List[ProductResponse], tags=["products"])
 def get_all_products(db: Session = Depends(get_db)):
     """Zwraca wszystkie produkty z bazy danych"""
     return product_service.get_all_products(db)
 
 
-@protected_router.get("/products/{product_id}", response_model=ProductResponse, tags=["products"])
+@public_router.get("/products/{product_id}", response_model=ProductResponse, tags=["products"])
 def get_product(product_id: int, db: Session = Depends(get_db)):
     """Zwraca produkt o konkretnym ID"""
     product = product_service.get_product_by_id(db, product_id)

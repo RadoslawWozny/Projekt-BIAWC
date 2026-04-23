@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router';
 import Login from './pages/Login';
 import PolitykaPrywatnosci from './pages/PolitykaPrywatnosci';
 import Regulamin from './pages/Regulamin';
@@ -9,6 +9,7 @@ import Zwroty from './pages/Zwroty';
 import Blog from './pages/Blog';
 import Kontakt from './pages/Kontakt';
 import ChatBot from './components/ChatBot';
+import Kasa from './pages/Kasa';
 /* ═══════════════════════════════════════════════════════════
    TYPES
    ═══════════════════════════════════════════════════════════ */
@@ -360,6 +361,7 @@ const CartDrawer = ({ cart, open, onClose, onAdd, onRemove, accent }: {
   cart: CartItem[]; open: boolean; onClose: () => void;
   onAdd: (p: Product) => void; onRemove: (id: number) => void; accent: string;
 }) => {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const PREVIEW = 4;
   const hasMore = cart.length > PREVIEW;
@@ -435,7 +437,7 @@ const CartDrawer = ({ cart, open, onClose, onAdd, onRemove, accent }: {
               <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#7A5C3A' }}>Łącznie</span>
               <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 32, fontWeight: 500, color: '#1C1209' }}>{total} zł</span>
             </div>
-            <button className="btn-primary" style={{ width: '100%', padding: '15px', borderRadius: 14, background: '#1C1209', color: '#FAF7F2', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: 400, letterSpacing: '.04em' }}
+            <button onClick={() => { onClose(); navigate('/kasa'); }} className="btn-primary" style={{ width: '100%', padding: '15px', borderRadius: 14, background: '#1C1209', color: '#FAF7F2', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: 400, letterSpacing: '.04em' }}
               onMouseEnter={e => e.currentTarget.style.background = accent}
               onMouseLeave={e => e.currentTarget.style.background = '#1C1209'}>
               Przejdź do kasy
@@ -932,12 +934,11 @@ const TweaksPanel = ({ tweaks, setTweaks, visible }: { tweaks: TweakState; setTw
 /* ═══════════════════════════════════════════════════════════
    MAIN APP
    ═══════════════════════════════════════════════════════════ */
-function Home() {
+function Home({ cart, setCart }: { cart: CartItem[], setCart: React.Dispatch<React.SetStateAction<CartItem[]>> }) {
   const [tweaks, setTweaks] = useState<TweakState>(TWEAK_DEFAULTS);
   
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartBump, setCartBump] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1071,10 +1072,13 @@ function Home() {
 }
 
 export default function App() {
+  const [cart, setCart] = useState<CartItem[]>([]);
+
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home cart={cart} setCart={setCart} />} />
+        <Route path="/kasa" element={<Kasa cart={cart} setCart={setCart} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/polityka-prywatnosci" element={<PolitykaPrywatnosci />} />
         <Route path="/regulamin" element={<Regulamin />} />

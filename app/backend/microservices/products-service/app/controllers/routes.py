@@ -96,6 +96,20 @@ def get_all_products(
     )
 
 
+@public_router.get("/products/search", response_model=List[ProductResponse], tags=["products"])
+def search_products(
+    q: str = Query(..., min_length=1, description="Fraza do wyszukania w opisie produktu"),
+    limit: int = Query(5, ge=1, le=20, description="Maksymalna liczba wyników"),
+    db: Session = Depends(get_db),
+):
+    """Wyszukuje produkty po frazie w opisie.
+    
+    Zwraca losowe `limit` produktów (domyślnie 5), których opis zawiera podaną frazę.
+    Przykład: /products/search?q=herbata
+    """
+    return product_service.search_products_by_description(db, q, limit)
+
+
 @public_router.get("/products/category/{kategoria}", response_model=List[ProductResponse], tags=["products"])
 def get_products_by_category(kategoria: str, db: Session = Depends(get_db)):
     """Zwraca produkty o danej kategorii (np. Kawa, Herbata, Dodatki)"""

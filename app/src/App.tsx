@@ -10,6 +10,7 @@ import Blog from './pages/Blog';
 import Kontakt from './pages/Kontakt';
 import ChatBot from './components/ChatBot';
 import Kasa from './pages/Kasa';
+import ProduktSzczegoly from './pages/ProduktSzczegoly';
 /* ═══════════════════════════════════════════════════════════
    TYPES
    ═══════════════════════════════════════════════════════════ */
@@ -360,8 +361,329 @@ const MegaMenu = ({ open, section, accent, onCatClick }: { open: boolean; sectio
 };
 
 /* ═══════════════════════════════════════════════════════════
-   NAVBAR
+   SEARCH RESULT INTERFACE
    ═══════════════════════════════════════════════════════════ */
+interface SearchResult {
+  id: number;
+  nazwa: string;
+  opis: string | null;
+  kategoria: string | null;
+  podkategoria: string | null;
+  cena: number;
+  waga_g: number | null;
+  jednostka: string | null;
+  kraj_pochodzenia: string | null;
+  ocena: number | null;
+}
+
+/* Maps product names (lowercase) → dedicated image files in /images/ */
+const SEARCH_NAME_TO_IMAGE: Record<string, string> = {
+  'sencha premium': '/images/01_sencha_premium.jpg',
+  'matcha ceremonial': '/images/02_matcha_ceremonial.jpg',
+  'darjeeling first flush': '/images/03_darjeeling_first_flush.jpg',
+  'earl grey classic': '/images/04_earl_grey_classic.jpg',
+  'tie guan yin': '/images/05_tie_guan_yin.jpg',
+  'bai hao yin zhen': '/images/06_bai_hao_yin_zhen.jpg',
+  'rooibos naturalny': '/images/07_rooibos_naturalny.jpg',
+  'ethiopia yirgacheffe': '/images/08_ethiopia_yirgacheffe.jpg',
+  'panama geisha': '/images/09_panama_geisha.jpg',
+  'espresso roma blend': '/images/10_espresso_roma_blend.jpg',
+  'chai masala': '/images/11_chai_masala.jpg',
+  'syrop waniliowy monin': '/images/12_syrop_waniliowy_monin.jpg',
+};
+
+const getSearchImage = (nazwa: string): string | null => {
+  const key = nazwa.toLowerCase();
+  return SEARCH_NAME_TO_IMAGE[key] || null;
+};
+
+const Navbar = ({ cartCount, onCartClick, searchQuery, setSearchQuery, accent, onCatFilter, cartBump }: {
+  cartCount: number; onCartClick: () => void; searchQuery: string; setSearchQuery: (s: string) => void;
+  accent: string; onCatFilter: (id: string) => void; cartBump: boolean;
+}) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [megaOpen, setMegaOpen] = useState<string | null>(null);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navSections = ['Kawy', 'Herbaty', 'Dodatki i Syropy'];
+  const API = (import.meta.env.VITE_PRODUCTS_API as string) || 'http://localhost:8002/api/v1';
+
+  useEffect(() => {
+    const h = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', h);
+    return () => window.removeEventListener('scroll', h);
+  }, []);
+
+  // Close search results on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Debounced search — calls backend /products/search?q=...
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (searchQuery.trim().length < 2) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    setSearchLoading(true);
+    debounceRef.current = setTimeout(() => {
+      fetch(`${API}/products/search?q=${encodeURIComponent(searchQuery.trim())}&limit=5`)
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then((data: SearchResult[]) => {
+          setSearchResults(data);
+          setShowResults(true);
+        })
+        .catch(err => {
+          console.warn('Search error:', err);
+          setSearchResults([]);
+          setShowResults(false);
+        })
+        .finally(() => setSearchLoading(false));
+    }, 300);
+
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery, API]);
+
+  return (
+    <>
+      <nav style={{
+        position: 'sticky', top: 0, left: 0, right: 0, zIndex: 100,
+        background: scrolled ? 'rgba(250,247,242,0.96)' : 'rgba(250,247,242,0.7)',
+        backdropFilter: 'blur(14px)',
+        borderBottom: scrolled && !megaOpen ? '1px solid #E8DDD0' : '1px solid transparent',
+        transition: 'background .4s ease, border-bottom .4s ease'
+      }}
+        onMouseLeave={() => setMegaOpen(null)}>
+        <div style={{ padding: '0 48px' }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto', height: 72, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+          {/* logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', flexShrink: 0 }}>
+            <div style={{ width: 30, height: 30, borderRadius: '50%', background: `${accent}20`, border: `1.5px solid ${accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 13, height: 13, borderRadius: '50%', background: accent }} />
+            </div>
+            <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 500, color: '#1C1209', letterSpacing: '.02em' }}>AromaBrew</span>
+          </div>
+
+          {/* nav */}
+          <div className="hidden md:flex" style={{ gap: 36, alignItems: 'center' }}>
+            {navSections.map(s => (
+              <button key={s} className={`nav-link${megaOpen === s ? ' active' : ''}`}
+                onMouseEnter={() => setMegaOpen(s)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: megaOpen === s ? 500 : 400, color: megaOpen === s ? accent : '#5C3D1E', letterSpacing: '.02em', transition: 'color .2s', display: 'flex', alignItems: 'center', gap: 4 }}>
+                {s}<IChevDown size={12} stroke={megaOpen === s ? accent : '#9E7A5A'} />
+              </button>
+            ))}
+          </div>
+
+          {/* right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            {/* ── Search with Dropdown ── */}
+            <div ref={searchRef} style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: searchOpen ? '#F2EBE0' : 'transparent', borderRadius: 24, padding: searchOpen ? '6px 14px' : '6px', transition: 'all .3s ease' }}>
+                {searchOpen && <input autoFocus value={searchQuery} onChange={e => { setSearchQuery(e.target.value); setShowResults(true); const el = document.querySelector('[data-products-section]'); if (el && e.target.value.trim().length >= 2) el.scrollIntoView({ behavior: 'smooth' }); }} placeholder="Szukaj..."
+                  onFocus={() => { if (searchResults.length > 0) setShowResults(true); }}
+                  style={{ border: 'none', background: 'transparent', outline: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: 14, color: '#1C1209', width: 180 }} />}
+                <button onClick={() => { setSearchOpen(!searchOpen); if (searchOpen) { setSearchQuery(''); setSearchResults([]); setShowResults(false); } }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: 0 }}>
+                  {searchOpen ? <IX size={17} stroke="#5C3D1E" /> : <ISearch size={17} stroke="#5C3D1E" />}
+                </button>
+              </div>
+
+              {/* Search Results Dropdown */}
+              {searchOpen && showResults && (
+                <div className="fade-in" style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  width: 340,
+                  background: '#FAF7F2',
+                  border: '1px solid #E8DDD0',
+                  borderRadius: 16,
+                  boxShadow: '0 16px 48px rgba(28,18,9,.15)',
+                  overflow: 'hidden',
+                  zIndex: 200,
+                }}>
+                  {/* Header */}
+                  <div style={{ padding: '12px 16px 10px', borderBottom: '1px solid #F2EBE0' }}>
+                    <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: accent, fontWeight: 500 }}>
+                      {searchLoading ? 'Wyszukiwanie...' : `Znaleziono ${searchResults.length} ${searchResults.length === 1 ? 'produkt' : searchResults.length < 5 ? 'produkty' : 'produktów'}`}
+                    </p>
+                  </div>
+
+                  {/* Results List */}
+                  <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+                    {searchResults.map((product, i) => {
+                      const imageUrl = getSearchImage(product.nazwa);
+                      return (
+                        <button
+                          key={product.id}
+                          className="fade-up"
+                          onClick={() => {
+                            setShowResults(false);
+                            setSearchOpen(false);
+                            setSearchQuery('');
+                            setSearchResults([]);
+                            // Scroll to products section
+                            const el = document.querySelector('[data-products-section]');
+                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          style={{
+                            animationDelay: `${i * 0.04}s`,
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                            padding: '10px 16px',
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            transition: 'background .15s ease',
+                            borderBottom: i < searchResults.length - 1 ? '1px solid #F5F0E8' : 'none',
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = '#F2EBE0'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                        >
+                          {/* Thumbnail */}
+                          {imageUrl ? (
+                            <div style={{
+                              width: 44,
+                              height: 44,
+                              borderRadius: 10,
+                              overflow: 'hidden',
+                              flexShrink: 0,
+                              border: '1px solid #F2EBE0',
+                            }}>
+                              <img
+                                src={imageUrl}
+                                alt={product.nazwa}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <div style={{
+                              width: 44,
+                              height: 44,
+                              borderRadius: 10,
+                              flexShrink: 0,
+                              background: `${accent}12`,
+                              border: '1px solid #F2EBE0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}>
+                              <ICoffee size={20} stroke={accent} />
+                            </div>
+                          )}
+
+                          {/* Product Info */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{
+                              fontFamily: "'Cormorant Garamond',serif",
+                              fontSize: 15,
+                              fontWeight: 500,
+                              color: '#1C1209',
+                              lineHeight: 1.2,
+                              marginBottom: 2,
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}>
+                              {product.nazwa}
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              {product.kategoria && (
+                                <span style={{
+                                  fontFamily: "'DM Sans',sans-serif",
+                                  fontSize: 10,
+                                  color: accent,
+                                  fontWeight: 500,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '.06em',
+                                }}>
+                                  {product.kategoria}
+                                </span>
+                              )}
+                              {product.podkategoria && (
+                                <>
+                                  <span style={{ color: '#D0C4B8', fontSize: 10 }}>·</span>
+                                  <span style={{
+                                    fontFamily: "'DM Sans',sans-serif",
+                                    fontSize: 10,
+                                    color: '#9E7A5A',
+                                  }}>
+                                    {product.podkategoria}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Price */}
+                          <span style={{
+                            fontFamily: "'Cormorant Garamond',serif",
+                            fontSize: 17,
+                            fontWeight: 500,
+                            color: '#1C1209',
+                            flexShrink: 0,
+                          }}>
+                            {product.cena} zł
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* No results state */}
+                  {!searchLoading && searchResults.length === 0 && searchQuery.trim().length >= 2 && (
+                    <div style={{ padding: '24px 16px', textAlign: 'center' }}>
+                      <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#9E7A5A', marginBottom: 4 }}>
+                        Brak wyników dla „{searchQuery}"
+                      </p>
+                      <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, color: '#D0C4B8' }}>
+                        Spróbuj innej frazy
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <button onClick={onCartClick} style={{ position: 'relative', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: 4 }}>
+              <ICart size={20} stroke="#5C3D1E" />
+              {cartCount > 0 && (
+                <span className={cartBump ? 'bump' : ''} style={{ position: 'absolute', top: -6, right: -6, width: 18, height: 18, borderRadius: '50%', background: accent, color: '#fff', fontSize: 10, fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans',sans-serif" }}>{cartCount}</span>
+              )}
+            </button>
+
+            <AuthControl accent={accent} onCartClick={onCartClick} />
+          </div>
+        </div>
+        </div>
+
+        <MegaMenu open={!!megaOpen} section={megaOpen} accent={accent} onCatClick={id => { onCatFilter(id); setMegaOpen(null); }} />
+      </nav>
+    </>
+  );
+};
+
 const useAuth = () => {
   const [email, setEmail] = useState<string | null>(() => localStorage.getItem('user_email'));
   useEffect(() => {
@@ -435,79 +757,6 @@ const AuthControl = ({ accent, onCartClick }: { accent: string; onCartClick: () 
   );
 };
 
-const Navbar = ({ cartCount, onCartClick, searchQuery, setSearchQuery, accent, onCatFilter, cartBump }: {
-  cartCount: number; onCartClick: () => void; searchQuery: string; setSearchQuery: (s: string) => void;
-  accent: string; onCatFilter: (id: string) => void; cartBump: boolean;
-}) => {
-  const [scrolled, setScrolled] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [megaOpen, setMegaOpen] = useState<string | null>(null);
-  const navSections = ['Kawy', 'Herbaty', 'Dodatki i Syropy'];
-
-  useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', h);
-    return () => window.removeEventListener('scroll', h);
-  }, []);
-
-  return (
-    <>
-      <nav style={{
-        position: 'sticky', top: 0, left: 0, right: 0, zIndex: 100,
-        background: scrolled ? 'rgba(250,247,242,0.96)' : 'rgba(250,247,242,0.7)',
-        backdropFilter: 'blur(14px)',
-        borderBottom: scrolled && !megaOpen ? '1px solid #E8DDD0' : '1px solid transparent',
-        transition: 'background .4s ease, border-bottom .4s ease'
-      }}
-        onMouseLeave={() => setMegaOpen(null)}>
-        <div style={{ padding: '0 48px' }}>
-          <div style={{ maxWidth: 1280, margin: '0 auto', height: 72, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
-          {/* logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', flexShrink: 0 }}>
-            <div style={{ width: 30, height: 30, borderRadius: '50%', background: `${accent}20`, border: `1.5px solid ${accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ width: 13, height: 13, borderRadius: '50%', background: accent }} />
-            </div>
-            <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 500, color: '#1C1209', letterSpacing: '.02em' }}>AromaBrew</span>
-          </div>
-
-          {/* nav */}
-          <div className="hidden md:flex" style={{ gap: 36, alignItems: 'center' }}>
-            {navSections.map(s => (
-              <button key={s} className={`nav-link${megaOpen === s ? ' active' : ''}`}
-                onMouseEnter={() => setMegaOpen(s)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: megaOpen === s ? 500 : 400, color: megaOpen === s ? accent : '#5C3D1E', letterSpacing: '.02em', transition: 'color .2s', display: 'flex', alignItems: 'center', gap: 4 }}>
-                {s}<IChevDown size={12} stroke={megaOpen === s ? accent : '#9E7A5A'} />
-              </button>
-            ))}
-          </div>
-
-          {/* right */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: searchOpen ? '#F2EBE0' : 'transparent', borderRadius: 24, padding: searchOpen ? '6px 14px' : '6px', transition: 'all .3s ease' }}>
-              {searchOpen && <input autoFocus value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Szukaj..."
-                style={{ border: 'none', background: 'transparent', outline: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: 14, color: '#1C1209', width: 140 }} />}
-              <button onClick={() => { setSearchOpen(!searchOpen); if (searchOpen) setSearchQuery(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: 0 }}>
-                {searchOpen ? <IX size={17} stroke="#5C3D1E" /> : <ISearch size={17} stroke="#5C3D1E" />}
-              </button>
-            </div>
-
-            <button onClick={onCartClick} style={{ position: 'relative', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: 4 }}>
-              <ICart size={20} stroke="#5C3D1E" />
-              {cartCount > 0 && (
-                <span className={cartBump ? 'bump' : ''} style={{ position: 'absolute', top: -6, right: -6, width: 18, height: 18, borderRadius: '50%', background: accent, color: '#fff', fontSize: 10, fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans',sans-serif" }}>{cartCount}</span>
-              )}
-            </button>
-
-            <AuthControl accent={accent} onCartClick={onCartClick} />
-          </div>
-        </div>
-        </div>
-
-        <MegaMenu open={!!megaOpen} section={megaOpen} accent={accent} onCatClick={id => { onCatFilter(id); setMegaOpen(null); }} />
-      </nav>
-    </>
-  );
-};
 
 /* ═══════════════════════════════════════════════════════════
    CART DRAWER
@@ -631,6 +880,7 @@ const CatPills = ({ active, setActive, accent }: { active: string; setActive: (i
    ═══════════════════════════════════════════════════════════ */
 const ProductCard = ({ product, onAdd, accent, showRatings }: { product: Product; onAdd: (p: Product) => void; accent: string; showRatings: boolean }) => {
   const [added, setAdded] = useState(false);
+  const navigate = useNavigate();
   const handle = () => { onAdd(product); setAdded(true); setTimeout(() => setAdded(false), 1800); };
   return (
     <div className="card" style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', border: '1px solid #F2EBE0', display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -659,9 +909,17 @@ const ProductCard = ({ product, onAdd, accent, showRatings }: { product: Product
         )}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
           <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 26, fontWeight: 500, color: '#1C1209' }}>{formatPrice(product.price)}</span>
-          <button onClick={handle} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 22, background: added ? '#6B8C6B' : accent, color: '#fff', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 12, fontWeight: 400, transition: 'all .3s ease', boxShadow: `0 4px 14px ${added ? '#6B8C6B' : accent}38` }}>
-            {added ? <><ICheck size={13} stroke="#fff" /> Dodano</> : '+ Koszyk'}
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => navigate(`/produkt/${product.id}`)}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '9px 16px', borderRadius: 22, background: 'transparent', color: '#5C3D1E', border: '1.5px solid #E8DDD0', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 12, fontWeight: 400, transition: 'all .2s ease' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.color = accent; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD0'; e.currentTarget.style.color = '#5C3D1E'; }}>
+              Zobacz
+            </button>
+            <button onClick={handle} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 22, background: added ? '#6B8C6B' : accent, color: '#fff', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 12, fontWeight: 400, transition: 'all .3s ease', boxShadow: `0 4px 14px ${added ? '#6B8C6B' : accent}38` }}>
+              {added ? <><ICheck size={13} stroke="#fff" /> Dodano</> : '+ Koszyk'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1205,11 +1463,9 @@ function Home({ cart, setCart }: { cart: CartItem[], setCart: React.Dispatch<Rea
   const cartCount = cart.reduce((s, p) => s + p.qty, 0);
   const accent = tweaks.accentColor;
 
-  // Search is still client-side on the fetched set
-  const filtered = dbProducts.filter(p => {
-    const q = searchQuery.toLowerCase();
-    return !q || p.name.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q)) || p.subtitle.toLowerCase().includes(q);
-  });
+  // Search is now handled by the Navbar dropdown (backend API).
+  // The main product list shows all products for the selected category.
+  const filtered = dbProducts;
 
   const cols = parseInt(tweaks.gridCols) || 3;
 
@@ -1224,13 +1480,13 @@ function Home({ cart, setCart }: { cart: CartItem[], setCart: React.Dispatch<Rea
       <PromoBanners />
 
       {/* Products section */}
-      <section ref={productsRef} style={{ padding: '80px 48px 100px' }}>
+      <section ref={productsRef} data-products-section style={{ padding: '80px 48px 100px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ marginBottom: 44, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16 }}>
             <div>
               <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, letterSpacing: '.12em', color: accent, textTransform: 'uppercase', marginBottom: 8, fontWeight: 500 }}>Kolekcja</p>
               <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 46, fontWeight: 300, color: '#1C1209' }}>
-                {searchQuery ? `Wyniki dla "${searchQuery}"` : 'Nasze produkty'}
+                Nasze produkty
               </h2>
             </div>
             <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#9E7A5A' }}>{filtered.length} produktów</p>
@@ -1305,6 +1561,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home cart={cart} setCart={setCart} />} />
         <Route path="/kasa" element={<Kasa cart={cart} setCart={setCart} />} />
+        <Route path="/produkt/:id" element={<ProduktSzczegoly />} />
         <Route path="/login" element={<Login />} />
         <Route path="/polityka-prywatnosci" element={<PolitykaPrywatnosci />} />
         <Route path="/regulamin" element={<Regulamin />} />

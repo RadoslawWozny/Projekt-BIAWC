@@ -66,6 +66,67 @@ const MEGA: Record<string, { label: string; sub: string; id: string }[]> = {
   ],
 };
 
+/* SVG icons for mega-menu tiles — keyed by subcategory id */
+const MegaIcon = ({ id, color, size = 20 }: { id: string; color: string; size?: number }) => {
+  const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  switch (id) {
+    /* ---- KAWY ---- */
+    case 'kawa-ziarnista': return (
+      <svg {...s}><ellipse cx="12" cy="12" rx="6" ry="9" /><path d="M10.5 5c1 2.5-1 7 .5 13" /></svg>
+    );
+    case 'kawa-mielona': return (
+      <svg {...s}><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><path d="M10 4V2M14 4V2"/></svg>
+    );
+    case 'kawa-espresso': return (
+      <svg {...s}><path d="M17 8h1a4 4 0 010 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="5"/><line x1="10" y1="2" x2="10" y2="5"/></svg>
+    );
+    case 'kawa-coldbrew': return (
+      <svg {...s}><path d="M8 2v4M16 2v4"/><rect x="6" y="6" width="12" height="16" rx="2"/><path d="M6 12h12"/><circle cx="12" cy="16" r="2"/></svg>
+    );
+    case 'kawa-specialty': return (
+      <svg {...s}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+    );
+    case 'kawa-rozpuszczalna': return (
+      <svg {...s}><path d="M12 2v6"/><path d="M8 4c0 0 2 2 4 2s4-2 4-2"/><rect x="6" y="8" width="12" height="14" rx="2"/><path d="M10 14h4"/></svg>
+    );
+    /* ---- HERBATY ---- */
+    case 'herbata-zielona': return (
+      <svg {...s}><path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+    );
+    case 'herbata-czarna': return (
+      <svg {...s}><path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" fill={`${color}30`}/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+    );
+    case 'herbata-biala': return (
+      <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M2 12h3M19 12h3M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg>
+    );
+    case 'herbata-oolong': return (
+      <svg {...s}><path d="M12 3c-1.5 3-4 5-4 9a4 4 0 008 0c0-4-2.5-6-4-9z"/><path d="M12 16v5"/></svg>
+    );
+    case 'herbata-ziolowa': return (
+      <svg {...s}><path d="M6 20c3-3 4.5-7 4.5-12"/><path d="M18 20c-3-3-4.5-7-4.5-12"/><path d="M12 8c-2 0-5 1-6.5 3"/><path d="M12 8c2 0 5 1 6.5 3"/><circle cx="12" cy="5" r="2"/></svg>
+    );
+    case 'herbata-puerh': return (
+      <svg {...s}><circle cx="12" cy="12" r="8"/><path d="M12 4v4M12 16v4"/><path d="M8 12H4M20 12h-4"/><circle cx="12" cy="12" r="3"/></svg>
+    );
+    /* ---- DODATKI ---- */
+    case 'dodatki-syropy': return (
+      <svg {...s}><path d="M8 2h8l-1 6H9L8 2z"/><rect x="7" y="8" width="10" height="14" rx="2"/><path d="M12 12v6"/></svg>
+    );
+    case 'dodatki-mleka': return (
+      <svg {...s}><path d="M8 2h8v4c0 1-1 2-2 2h-4c-1 0-2-1-2-2V2z"/><path d="M6 8h12v12a2 2 0 01-2 2H8a2 2 0 01-2-2V8z"/><path d="M10 13c0-1 1-2 2-2s2 1 2 2-1 2-2 3-2 2-2 3"/></svg>
+    );
+    case 'dodatki-slodziki': return (
+      <svg {...s}><path d="M12 2C8 2 4 5 4 9c0 3 2 5 4 6l1 7h6l1-7c2-1 4-3 4-6 0-4-4-7-8-7z"/><path d="M10 14h4"/></svg>
+    );
+    case 'dodatki-przyprawy': return (
+      <svg {...s}><path d="M12 2c-1 3-3 5-3 8a3 3 0 006 0c0-3-2-5-3-8z"/><line x1="12" y1="13" x2="12" y2="22"/><path d="M9 18h6"/></svg>
+    );
+    default: return (
+      <svg {...s}><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2 2"/></svg>
+    );
+  }
+};
+
 const CATS = [
   { id: 'all', label: 'Wszystkie' },
   { id: 'kawa', label: 'Kawa' },
@@ -286,7 +347,7 @@ const MegaMenu = ({ open, section, accent, onCatClick }: { open: boolean; sectio
               style={{ textAlign: 'left', padding: '16px', borderRadius: 14, background: '#F5EFE6', border: '1px solid #EDE5D8', cursor: 'pointer', transition: 'all .2s ease' }}
               onMouseEnter={e => { e.currentTarget.style.background = `${accent}14`; e.currentTarget.style.borderColor = `${accent}50`; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#F5EFE6'; e.currentTarget.style.borderColor = '#EDE5D8'; }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: `${accent}18`, marginBottom: 10 }} />
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: `${accent}18`, marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MegaIcon id={it.id} color={accent} size={18} /></div>
               <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 500, color: '#1C1209', marginBottom: 4, lineHeight: 1.3 }}>{it.label}</p>
               <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, color: '#9E7A5A', lineHeight: 1.4 }}>{it.sub}</p>
             </button>
@@ -1041,10 +1102,29 @@ function Home() {
   const location = useLocation();
   const API = (import.meta.env.VITE_PRODUCTS_API as string) || 'http://localhost:8002/api/v1';
 
+  /* Map product names (lowercase) → dedicated image files in /images/ */
+  const NAME_TO_IMAGE: Record<string, string> = {
+    'sencha premium': '/images/01_sencha_premium.jpg',
+    'matcha ceremonial': '/images/02_matcha_ceremonial.jpg',
+    'darjeeling first flush': '/images/03_darjeeling_first_flush.jpg',
+    'earl grey classic': '/images/04_earl_grey_classic.jpg',
+    'tie guan yin': '/images/05_tie_guan_yin.jpg',
+    'bai hao yin zhen': '/images/06_bai_hao_yin_zhen.jpg',
+    'rooibos naturalny': '/images/07_rooibos_naturalny.jpg',
+    'ethiopia yirgacheffe': '/images/08_ethiopia_yirgacheffe.jpg',
+    'panama geisha': '/images/09_panama_geisha.jpg',
+    'espresso roma blend': '/images/10_espresso_roma_blend.jpg',
+    'chai masala': '/images/11_chai_masala.jpg',
+    'syrop waniliowy monin': '/images/12_syrop_waniliowy_monin.jpg',
+  };
+
   const mapRows = useCallback((rows: any[]): Product[] => {
     const fallbackImgs = ['/images/prod1.jpg','/images/prod2.jpg','/images/prod3.jpg','/images/prod4.jpg','/images/prod5.jpg','/images/prod6.jpg','/images/prod7.jpg','/images/prod8.jpg'];
     const colorMap: Record<string, string> = { 'Kawa': '#6B4C3B', 'Herbata': '#6B8C6B', 'Dodatki': '#8E7AB5' };
-    return rows.map((r, i) => ({
+    return rows.map((r, i) => {
+      const nameKey = (r.nazwa || '').toLowerCase();
+      const dedicatedImg = NAME_TO_IMAGE[nameKey];
+      return {
       id: 1000 + (r.id ?? i),
       category: (r.podkategoria || r.kategoria || '').toLowerCase(),
       name: r.nazwa,
@@ -1056,8 +1136,9 @@ function Home() {
       reviews: 0,
       color: colorMap[r.kategoria] || '#6B4C3B',
       desc: r.opis || '',
-      image: fallbackImgs[i % fallbackImgs.length],
-    }));
+      image: dedicatedImg || fallbackImgs[i % fallbackImgs.length],
+    };
+    });
   }, []);
 
   const fetchProducts = useCallback((catId: string) => {

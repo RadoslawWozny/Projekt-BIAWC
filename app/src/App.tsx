@@ -44,40 +44,126 @@ interface TweakState {
    ═══════════════════════════════════════════════════════════ */
 const MEGA: Record<string, { label: string; sub: string; id: string }[]> = {
   'Kawy': [
-    { label: 'Kawa Ziarnista', sub: 'Single origin & blends', id: 'ziarnista' },
-    { label: 'Kawa Mielona', sub: 'Do ekspresu przelewowego', id: 'mielona' },
-    { label: 'Kawa Espresso', sub: 'Intensywne blends', id: 'espresso' },
-    { label: 'Kawa Bezkofeinowa', sub: 'Pełny smak, bez kofeiny', id: 'bezkofeinowa' },
-    { label: 'Specialty Coffee', sub: 'Ocena SCA 80+', id: 'specialty' },
-    { label: 'Kawa Smakowa', sub: 'Wanilia, orzech, karmel', id: 'smakowa' },
+    { label: 'Kawa Ziarnista', sub: 'Single origin & blends', id: 'kawa-ziarnista' },
+    { label: 'Kawa Mielona', sub: 'Do ekspresu przelewowego', id: 'kawa-mielona' },
+    { label: 'Kawa Espresso', sub: 'Intensywne blends', id: 'kawa-espresso' },
+    { label: 'Cold Brew', sub: 'Na zimno, smooth', id: 'kawa-coldbrew' },
+    { label: 'Specialty Coffee', sub: 'Ocena SCA 80+', id: 'kawa-specialty' },
+    { label: 'Rozpuszczalna', sub: 'Szybka i wygodna', id: 'kawa-rozpuszczalna' },
   ],
   'Herbaty': [
-    { label: 'Herbata Zielona', sub: 'Japońska & chińska', id: 'zielona' },
-    { label: 'Herbata Czarna', sub: 'Assam, Darjeeling, Ceylon', id: 'czarna' },
-    { label: 'Herbata Biała', sub: 'Delikatna, kwiatowa', id: 'biala' },
-    { label: 'Matcha', sub: 'Ceremonial & kulinarny', id: 'matcha' },
-    { label: 'Ziołowe Napary', sub: 'Rumianek, mięta, imbir', id: 'ziola' },
-    { label: 'Yerba Mate', sub: 'Argentyńska tradycja', id: 'yerba' },
+    { label: 'Herbata Zielona', sub: 'Japońska & chińska', id: 'herbata-zielona' },
+    { label: 'Herbata Czarna', sub: 'Assam, Darjeeling, Ceylon', id: 'herbata-czarna' },
+    { label: 'Herbata Biała', sub: 'Delikatna, kwiatowa', id: 'herbata-biala' },
+    { label: 'Oolong', sub: 'Częściowo utleniona', id: 'herbata-oolong' },
+    { label: 'Ziołowe Napary', sub: 'Rumianek, mięta, imbir', id: 'herbata-ziolowa' },
+    { label: 'Pu-erh', sub: 'Fermentowana, ziemista', id: 'herbata-puerh' },
   ],
   'Dodatki i Syropy': [
-    { label: 'Syropy Smakowe', sub: 'Lawenda, wanilia, malina', id: 'syropy' },
-    { label: 'Cukier Trzcinowy', sub: 'Naturalny i kokosowy', id: 'cukier' },
-    { label: 'Mleko Roślinne', sub: 'Owsiane, migdałowe, sojowe', id: 'mleko' },
-    { label: 'Akcesoria', sub: 'Drippery, french press, tamper', id: 'akcesoria' },
-    { label: 'Zestawy Prezentowe', sub: 'Eleganckie upominki', id: 'zestawy' },
+    { label: 'Syropy Smakowe', sub: 'Lawenda, wanilia, malina', id: 'dodatki-syropy' },
+    { label: 'Mleko Roślinne', sub: 'Owsiane, migdałowe, sojowe', id: 'dodatki-mleka' },
+    { label: 'Słodziki', sub: 'Miód, cukier trzcinowy', id: 'dodatki-slodziki' },
+    { label: 'Przyprawy', sub: 'Cynamon, kardamon, imbir', id: 'dodatki-przyprawy' },
   ],
+};
+
+/* SVG icons for mega-menu tiles — keyed by subcategory id */
+const MegaIcon = ({ id, color, size = 20 }: { id: string; color: string; size?: number }) => {
+  const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  switch (id) {
+    /* ---- KAWY ---- */
+    case 'kawa-ziarnista': return (
+      <svg {...s}><ellipse cx="12" cy="12" rx="6" ry="9" /><path d="M10.5 5c1 2.5-1 7 .5 13" /></svg>
+    );
+    case 'kawa-mielona': return (
+      <svg {...s}><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><path d="M10 4V2M14 4V2"/></svg>
+    );
+    case 'kawa-espresso': return (
+      <svg {...s}><path d="M17 8h1a4 4 0 010 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="5"/><line x1="10" y1="2" x2="10" y2="5"/></svg>
+    );
+    case 'kawa-coldbrew': return (
+      <svg {...s}><path d="M8 2v4M16 2v4"/><rect x="6" y="6" width="12" height="16" rx="2"/><path d="M6 12h12"/><circle cx="12" cy="16" r="2"/></svg>
+    );
+    case 'kawa-specialty': return (
+      <svg {...s}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+    );
+    case 'kawa-rozpuszczalna': return (
+      <svg {...s}><path d="M12 2v6"/><path d="M8 4c0 0 2 2 4 2s4-2 4-2"/><rect x="6" y="8" width="12" height="14" rx="2"/><path d="M10 14h4"/></svg>
+    );
+    /* ---- HERBATY ---- */
+    case 'herbata-zielona': return (
+      <svg {...s}><path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+    );
+    case 'herbata-czarna': return (
+      <svg {...s}><path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" fill={`${color}30`}/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+    );
+    case 'herbata-biala': return (
+      <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M2 12h3M19 12h3M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg>
+    );
+    case 'herbata-oolong': return (
+      <svg {...s}><path d="M12 3c-1.5 3-4 5-4 9a4 4 0 008 0c0-4-2.5-6-4-9z"/><path d="M12 16v5"/></svg>
+    );
+    case 'herbata-ziolowa': return (
+      <svg {...s}><path d="M6 20c3-3 4.5-7 4.5-12"/><path d="M18 20c-3-3-4.5-7-4.5-12"/><path d="M12 8c-2 0-5 1-6.5 3"/><path d="M12 8c2 0 5 1 6.5 3"/><circle cx="12" cy="5" r="2"/></svg>
+    );
+    case 'herbata-puerh': return (
+      <svg {...s}><circle cx="12" cy="12" r="8"/><path d="M12 4v4M12 16v4"/><path d="M8 12H4M20 12h-4"/><circle cx="12" cy="12" r="3"/></svg>
+    );
+    /* ---- DODATKI ---- */
+    case 'dodatki-syropy': return (
+      <svg {...s}><path d="M8 2h8l-1 6H9L8 2z"/><rect x="7" y="8" width="10" height="14" rx="2"/><path d="M12 12v6"/></svg>
+    );
+    case 'dodatki-mleka': return (
+      <svg {...s}><path d="M8 2h8v4c0 1-1 2-2 2h-4c-1 0-2-1-2-2V2z"/><path d="M6 8h12v12a2 2 0 01-2 2H8a2 2 0 01-2-2V8z"/><path d="M10 13c0-1 1-2 2-2s2 1 2 2-1 2-2 3-2 2-2 3"/></svg>
+    );
+    case 'dodatki-slodziki': return (
+      <svg {...s}><path d="M12 2C8 2 4 5 4 9c0 3 2 5 4 6l1 7h6l1-7c2-1 4-3 4-6 0-4-4-7-8-7z"/><path d="M10 14h4"/></svg>
+    );
+    case 'dodatki-przyprawy': return (
+      <svg {...s}><path d="M12 2c-1 3-3 5-3 8a3 3 0 006 0c0-3-2-5-3-8z"/><line x1="12" y1="13" x2="12" y2="22"/><path d="M9 18h6"/></svg>
+    );
+    default: return (
+      <svg {...s}><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2 2"/></svg>
+    );
+  }
 };
 
 const CATS = [
   { id: 'all', label: 'Wszystkie' },
-  { id: 'ziarnista', label: 'Kawa Ziarnista' },
-  { id: 'espresso', label: 'Kawa Espresso' },
-  { id: 'zielona', label: 'Herbata Zielona' },
-  { id: 'czarna', label: 'Herbata Czarna' },
-  { id: 'matcha', label: 'Matcha' },
-  { id: 'syropy', label: 'Syropy' },
+  { id: 'kawa', label: 'Kawa' },
+  { id: 'kawa-ziarnista', label: 'Kawa Ziarnista' },
+  { id: 'kawa-espresso', label: 'Espresso' },
+  { id: 'herbata', label: 'Herbata' },
+  { id: 'herbata-zielona', label: 'Herbata Zielona' },
+  { id: 'herbata-czarna', label: 'Herbata Czarna' },
+  { id: 'dodatki', label: 'Dodatki' },
   { id: 'bestseller', label: 'Bestsellery' },
 ];
+
+/* Maps frontend pill IDs to backend query params */
+const BACKEND_FILTER: Record<string, { kategoria?: string; podkategoria?: string }> = {
+  'all': {},
+  'kawa': { kategoria: 'Kawa' },
+  'kawa-ziarnista': { kategoria: 'Kawa', podkategoria: 'Ziarnista' },
+  'kawa-mielona': { kategoria: 'Kawa', podkategoria: 'Mielona' },
+  'kawa-espresso': { kategoria: 'Kawa', podkategoria: 'Espresso' },
+  'kawa-coldbrew': { kategoria: 'Kawa', podkategoria: 'Cold Brew' },
+  'kawa-specialty': { kategoria: 'Kawa', podkategoria: 'Specialty' },
+  'kawa-rozpuszczalna': { kategoria: 'Kawa', podkategoria: 'Rozpuszczalna' },
+  'herbata': { kategoria: 'Herbata' },
+  'herbata-zielona': { kategoria: 'Herbata', podkategoria: 'Zielona' },
+  'herbata-czarna': { kategoria: 'Herbata', podkategoria: 'Czarna' },
+  'herbata-biala': { kategoria: 'Herbata', podkategoria: 'Biała' },
+  'herbata-oolong': { kategoria: 'Herbata', podkategoria: 'Oolong' },
+  'herbata-ziolowa': { kategoria: 'Herbata', podkategoria: 'Ziołowa' },
+  'herbata-puerh': { kategoria: 'Herbata', podkategoria: 'Pu-erh' },
+  'dodatki': { kategoria: 'Dodatki' },
+  'dodatki-syropy': { kategoria: 'Dodatki', podkategoria: 'Syropy' },
+  'dodatki-mleka': { kategoria: 'Dodatki', podkategoria: 'Mleka roślinne' },
+  'dodatki-slodziki': { kategoria: 'Dodatki', podkategoria: 'Słodziki' },
+  'dodatki-przyprawy': { kategoria: 'Dodatki', podkategoria: 'Przyprawy' },
+  'bestseller': {},
+};
 
 const PRODUCTS: Product[] = [
   { id: 1, category: 'ziarnista', name: 'Ethiopia Yirgacheffe', subtitle: 'Kawa ziarnista single origin', tags: ['100% Arabica', 'Single Origin', 'Owocowy'], price: 89, weight: '250g', rating: 4.8, reviews: 124, color: '#8B6642', desc: 'Delikatna, kwiatowa z nutami czarnej porzeczki i bergamotki.', image: '/images/prod1.jpg' },
@@ -262,7 +348,7 @@ const MegaMenu = ({ open, section, accent, onCatClick }: { open: boolean; sectio
               style={{ textAlign: 'left', padding: '16px', borderRadius: 14, background: '#F5EFE6', border: '1px solid #EDE5D8', cursor: 'pointer', transition: 'all .2s ease' }}
               onMouseEnter={e => { e.currentTarget.style.background = `${accent}14`; e.currentTarget.style.borderColor = `${accent}50`; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#F5EFE6'; e.currentTarget.style.borderColor = '#EDE5D8'; }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: `${accent}18`, marginBottom: 10 }} />
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: `${accent}18`, marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MegaIcon id={it.id} color={accent} size={18} /></div>
               <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 500, color: '#1C1209', marginBottom: 4, lineHeight: 1.3 }}>{it.label}</p>
               <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, color: '#9E7A5A', lineHeight: 1.4 }}>{it.sub}</p>
             </button>
@@ -276,6 +362,79 @@ const MegaMenu = ({ open, section, accent, onCatClick }: { open: boolean; sectio
 /* ═══════════════════════════════════════════════════════════
    NAVBAR
    ═══════════════════════════════════════════════════════════ */
+const useAuth = () => {
+  const [email, setEmail] = useState<string | null>(() => localStorage.getItem('user_email'));
+  useEffect(() => {
+    const sync = () => setEmail(localStorage.getItem('user_email'));
+    window.addEventListener('auth-change', sync);
+    window.addEventListener('storage', sync);
+    return () => { window.removeEventListener('auth-change', sync); window.removeEventListener('storage', sync); };
+  }, []);
+  const logout = () => {
+    ['access_token', 'id_token', 'refresh_token', 'user_email'].forEach(k => localStorage.removeItem(k));
+    window.dispatchEvent(new Event('auth-change'));
+  };
+  return { email, isAuthed: !!email, logout };
+};
+
+const AuthControl = ({ accent, onCartClick }: { accent: string; onCartClick: () => void }) => {
+  const { email, isAuthed, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+  if (!isAuthed) return (
+    <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 20px', borderRadius: 24, background: '#1C1209', color: '#FAF7F2', border: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: '.03em', transition: 'background .2s ease', cursor: 'pointer', textDecoration: 'none' }}
+      onMouseEnter={e => e.currentTarget.style.background = accent}
+      onMouseLeave={e => e.currentTarget.style.background = '#1C1209'}>
+      <IUser size={15} stroke="#FAF7F2" />Zaloguj się
+    </Link>
+  );
+  const initial = (email || '?').charAt(0).toUpperCase();
+  const items: { label: string; onClick?: () => void; icon: any }[] = [
+    { label: 'Moje konto', icon: <IUser size={15} stroke="#5C3D1E" /> },
+    { label: 'Ustawienia', icon: <Ic d="M12 15a3 3 0 100-6 3 3 0 000 6z M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" size={15} stroke="#5C3D1E" /> },
+    { label: 'Koszyk', icon: <ICart size={15} stroke="#5C3D1E" />, onClick: () => { setOpen(false); onCartClick(); } },
+  ];
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px 6px 6px', borderRadius: 24, background: '#1C1209', color: '#FAF7F2', border: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: 13, cursor: 'pointer', transition: 'background .2s ease' }}
+        onMouseEnter={e => e.currentTarget.style.background = accent}
+        onMouseLeave={e => e.currentTarget.style.background = '#1C1209'}>
+        <span style={{ width: 28, height: 28, borderRadius: '50%', background: accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Cormorant Garamond',serif", fontSize: 15, fontWeight: 500 }}>{initial}</span>
+        <span style={{ maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</span>
+        <IChevDown size={12} stroke="#FAF7F2" />
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: 0, minWidth: 240, background: '#FAF7F2', border: '1px solid #E8DDD0', borderRadius: 14, boxShadow: '0 12px 32px rgba(28,18,9,.12)', padding: 8, zIndex: 200 }}>
+          <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid #F2EBE0', marginBottom: 6 }}>
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, color: '#9E7A5A', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 3 }}>Zalogowano jako</p>
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#1C1209', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{email}</p>
+          </div>
+          {items.map(it => (
+            <button key={it.label} onClick={it.onClick || (() => setOpen(false))} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#1C1209', borderRadius: 8, textAlign: 'left', transition: 'background .15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#F2EBE0'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              {it.icon}{it.label}
+            </button>
+          ))}
+          <div style={{ borderTop: '1px solid #F2EBE0', marginTop: 6, paddingTop: 6 }}>
+            <button onClick={() => { logout(); setOpen(false); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: '#A04040', borderRadius: 8, textAlign: 'left', transition: 'background .15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#FCEBEB'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <Ic d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" size={15} stroke="#A04040" />
+              Wyloguj się
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Navbar = ({ cartCount, onCartClick, searchQuery, setSearchQuery, accent, onCatFilter, cartBump }: {
   cartCount: number; onCartClick: () => void; searchQuery: string; setSearchQuery: (s: string) => void;
   accent: string; onCatFilter: (id: string) => void; cartBump: boolean;
@@ -339,11 +498,7 @@ const Navbar = ({ cartCount, onCartClick, searchQuery, setSearchQuery, accent, o
               )}
             </button>
 
-            <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 20px', borderRadius: 24, background: '#1C1209', color: '#FAF7F2', border: 'none', fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: '.03em', transition: 'background .2s ease', cursor: 'pointer', textDecoration: 'none' }}
-              onMouseEnter={e => e.currentTarget.style.background = accent}
-              onMouseLeave={e => e.currentTarget.style.background = '#1C1209'}>
-              <IUser size={15} stroke="#FAF7F2" />Zaloguj się
-            </Link>
+            <AuthControl accent={accent} onCartClick={onCartClick} />
           </div>
         </div>
         </div>
@@ -942,17 +1097,89 @@ function Home({ cart, setCart }: { cart: CartItem[], setCart: React.Dispatch<Rea
   const [cartOpen, setCartOpen] = useState(false);
   const [cartBump, setCartBump] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [dbProducts, setDbProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
   const productsRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const API = (import.meta.env.VITE_PRODUCTS_API as string) || 'http://localhost:8002/api/v1';
+
+  /* Map product names (lowercase) → dedicated image files in /images/ */
+  const NAME_TO_IMAGE: Record<string, string> = {
+    'sencha premium': '/images/01_sencha_premium.jpg',
+    'matcha ceremonial': '/images/02_matcha_ceremonial.jpg',
+    'darjeeling first flush': '/images/03_darjeeling_first_flush.jpg',
+    'earl grey classic': '/images/04_earl_grey_classic.jpg',
+    'tie guan yin': '/images/05_tie_guan_yin.jpg',
+    'bai hao yin zhen': '/images/06_bai_hao_yin_zhen.jpg',
+    'rooibos naturalny': '/images/07_rooibos_naturalny.jpg',
+    'ethiopia yirgacheffe': '/images/08_ethiopia_yirgacheffe.jpg',
+    'panama geisha': '/images/09_panama_geisha.jpg',
+    'espresso roma blend': '/images/10_espresso_roma_blend.jpg',
+    'chai masala': '/images/11_chai_masala.jpg',
+    'syrop waniliowy monin': '/images/12_syrop_waniliowy_monin.jpg',
+  };
+
+  const mapRows = useCallback((rows: any[]): Product[] => {
+    const fallbackImgs = ['/images/prod1.jpg','/images/prod2.jpg','/images/prod3.jpg','/images/prod4.jpg','/images/prod5.jpg','/images/prod6.jpg','/images/prod7.jpg','/images/prod8.jpg'];
+    const colorMap: Record<string, string> = { 'Kawa': '#6B4C3B', 'Herbata': '#6B8C6B', 'Dodatki': '#8E7AB5' };
+    return rows.map((r, i) => {
+      const nameKey = (r.nazwa || '').toLowerCase();
+      const dedicatedImg = NAME_TO_IMAGE[nameKey];
+      return {
+      id: 1000 + (r.id ?? i),
+      category: (r.podkategoria || r.kategoria || '').toLowerCase(),
+      name: r.nazwa,
+      subtitle: r.podkategoria || r.kategoria || 'Z bazy danych',
+      tags: [r.kraj_pochodzenia, r.kategoria, r.podkategoria].filter(Boolean),
+      price: Number(r.cena) || 0,
+      weight: r.waga_g ? `${r.waga_g}${r.jednostka === 'ml' ? 'ml' : 'g'}` : (r.jednostka || ''),
+      rating: Number(r.ocena) || 0,
+      reviews: 0,
+      color: colorMap[r.kategoria] || '#6B4C3B',
+      desc: r.opis || '',
+      image: dedicatedImg || fallbackImgs[i % fallbackImgs.length],
+    };
+    });
+  }, []);
+
+  const fetchProducts = useCallback((catId: string) => {
+    setLoading(true);
+    const filter = BACKEND_FILTER[catId] || {};
+    const params = new URLSearchParams();
+    if (filter.kategoria) params.set('kategoria', filter.kategoria);
+    if (filter.podkategoria) params.set('podkategoria', filter.podkategoria);
+    const qs = params.toString();
+    const url = `${API}/products${qs ? `?${qs}` : ''}`;
+
+    fetch(url)
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then((rows: any[]) => {
+        let mapped = mapRows(rows);
+        // 'bestseller' = kliencki filtr po ocenie
+        if (catId === 'bestseller') mapped = mapped.filter(p => p.rating >= 4.7);
+        setDbProducts(mapped);
+      })
+      .catch(err => console.warn('Nie udało się pobrać produktów z backendu:', err))
+      .finally(() => setLoading(false));
+  }, [API, mapRows]);
+
+  // Initial load + re-fetch when category changes
+  useEffect(() => {
+    fetchProducts(category);
+  }, [category, fetchProducts]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const cat = params.get('cat');
     if (cat) {
-      setCategory(cat);
+      // Map old-style URL params (e.g. ?cat=ziarnista) to new pill IDs
+      const oldToNew: Record<string, string> = {
+        'ziarnista': 'kawa-ziarnista', 'espresso': 'kawa-espresso',
+        'zielona': 'herbata-zielona', 'czarna': 'herbata-czarna',
+        'syropy': 'dodatki', 'matcha': 'herbata',
+      };
+      setCategory(oldToNew[cat] || cat);
       setTimeout(() => productsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-    } else {
-      setCategory('all');
     }
   }, [location.search]);
 
@@ -978,11 +1205,10 @@ function Home({ cart, setCart }: { cart: CartItem[], setCart: React.Dispatch<Rea
   const cartCount = cart.reduce((s, p) => s + p.qty, 0);
   const accent = tweaks.accentColor;
 
-  const filtered = PRODUCTS.filter(p => {
-    const mc = category === 'all' || (category === 'bestseller' ? p.rating >= 4.8 : p.category === category);
+  // Search is still client-side on the fetched set
+  const filtered = dbProducts.filter(p => {
     const q = searchQuery.toLowerCase();
-    const ms = !q || p.name.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q)) || p.subtitle.toLowerCase().includes(q);
-    return mc && ms;
+    return !q || p.name.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q)) || p.subtitle.toLowerCase().includes(q);
   });
 
   const cols = parseInt(tweaks.gridCols) || 3;
